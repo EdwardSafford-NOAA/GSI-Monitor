@@ -306,7 +306,8 @@ if [[ $MY_MACHINE = "hera" ]]; then
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
    $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/DE.${PDY}.${cyc}.err \
-        -V -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
+	   -v CYCLE_INTERVAL=${CYCLE_INTERVAL},NET=${NET},RAD_AREA=${RAD_AREA},DATA=${DATA},radstat=${radstat},NCP="${NCP}",$HOMEnam=${HOMEnam},HOMEradmon=${HOMEradmon},TANKverf=${TANKverf},PDY=${PDY},cyc=${cyc},NDATE=${NDATE},MY_RADMON=${MY_RADMON},GSI_MON_BIN=${GSI_MON_BIN} \
+        -l place=shared,select=1:ncpus=1:mem=5000M -l walltime=00:20:00 -N ${jobname} ${job}
 fi
 
 

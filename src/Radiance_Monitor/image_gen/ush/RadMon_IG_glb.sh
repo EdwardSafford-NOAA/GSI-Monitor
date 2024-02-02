@@ -344,7 +344,7 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
 
       transfer_queue=dev_transfer
       jobname=transfer_${RADMON_SUFFIX}
-      export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/pngs
+      export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}
 
       cmdfile="${PLOT_WORK_DIR}/transfer_cmd"
       echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
