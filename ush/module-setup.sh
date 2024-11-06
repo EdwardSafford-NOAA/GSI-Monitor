@@ -22,6 +22,13 @@ elif [[ $MACHINE_ID = orion* ]] ; then
     fi
     module purge
 
+elif [[ $MACHINE_ID = container* ]] ; then
+    # We are in a container
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /usr/lmod/lmod/init/bash
+    fi
+    module purge
+
 elif [[ $MACHINE_ID = hercules* ]] ; then
     # We are on Hercules
     if ( ! eval module help > /dev/null 2>&1 ) ; then
