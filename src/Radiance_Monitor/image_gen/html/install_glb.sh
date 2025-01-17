@@ -216,7 +216,6 @@ done
 #  Sort the list by Satellite 
 #
 `sort -d -u $UNSORTED_LIST > $SORTED_LIST`
-#echo SORTED_LIST = $SORTED_LIST
 
 #--------------------------------------------------------------
 #  Read the sorted list and create the platform table

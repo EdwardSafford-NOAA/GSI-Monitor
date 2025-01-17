@@ -162,16 +162,16 @@ fi
 #  Use the SATYPE list to construct the platform table.
 #
 UNSORTED_LIST=./unsorted.txt
->$UNSORTED_LIST
+>${UNSORTED_LIST}
 export SORTED_LIST=./sorted.txt
->$SORTED_LIST
+>${SORTED_LIST}
 
-for satype in $SATYPE; do
+for satype in ${SATYPE}; do
    ins=${satype%_*}
    tmp="${ins}_"
-   sat=${satype#$tmp} 
+   sat=${satype#${tmp}} 
 
-   sat_num=`echo $sat | tr -d '[[:alpha:]]'`	
+   sat_num=`echo ${sat} | tr -d '[[:alpha:]]'`	
 
    #-----------------------------------------------------------------
    # If sat_num has a length > 0 then we have a goes or noaa series
