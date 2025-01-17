@@ -367,20 +367,20 @@
                 data1.addColumn('number', 'ges, atmpath');      data1.addColumn('number', 'anl, atmpath');
                 data1.addColumn('number', 'ges, clw');          data1.addColumn('number', 'anl, clw');
                 data1.addColumn('number', 'ges, lapse2');       data1.addColumn('number', 'anl, lapse2');
-                data1.addColumn('number', 'ges, lapse');        data1.addColumn('number', 'anl, lapse'); 
+                data1.addColumn('number', 'ges, lapse');        data1.addColumn('number', 'anl, lapse');
                 data1.addColumn('number', 'ges, cos_ssmis');    data1.addColumn('number', 'anl, cos_ssmis');
                 data1.addColumn('number', 'ges, sin_ssmis');    data1.addColumn('number', 'anl, sin_ssmis');
                 data1.addColumn('number', 'ges, emiss');        data1.addColumn('number', 'anl, emiss');
                 data1.addColumn('number', 'ges, ordang4');      data1.addColumn('number', 'anl, ordang4');
                 data1.addColumn('number', 'ges, ordang3');      data1.addColumn('number', 'anl, ordang3');
                 data1.addColumn('number', 'ges, ordang2');      data1.addColumn('number', 'anl, ordang2');
-                data1.addColumn('number', 'ges, ordang1');      data1.addColumn('number', 'anl, ordang1'); 
+                data1.addColumn('number', 'ges, ordang1');      data1.addColumn('number', 'anl, ordang1');
 
                 var idx = curChan;
-                 //log( 'curChan:'); log( curChan );
-                 //log( 'curStat:'); log( curStat );
+                //log( 'curChan:'); log( curChan );
+                //log( 'curStat:'); log( curStat );
                 var ncyc = chanData[0].ncyc;
-                 //log( 'ncyc:'); log( ncyc );
+                //log( 'ncyc:'); log( ncyc );
 
 
                 var chartTitle1;
@@ -393,33 +393,33 @@
                 // --------------------------------------
 
                 for (var ii = 0; ii < ncyc; ii++) {
-                   var yr = chartData[idx][0].time[ii].substr(0, 4);
-                   var mm = Number(chartData[idx][0].time[ii].substr(4, 2)) - 1;  // stupidity!  mm is range 0-11, not 1-12 according to some idiot at google
-                   var dd = chartData[idx][0].time[ii].substr(6, 2);
-                   var hh = chartData[idx][0].time[ii].substr(8, 2);
+                    var yr = chartData[idx][0].time[ii].substr(0, 4);
+                    var mm = Number(chartData[idx][0].time[ii].substr(4, 2)) - 1;  // stupidity!  mm is range 0-11, not 1-12 according to some idiot at google
+                    var dd = chartData[idx][0].time[ii].substr(6, 2);
+                    var hh = chartData[idx][0].time[ii].substr(8, 2);
 
-                   data1.addRows([
-                       [new Date(yr, mm, dd, hh),
-                           Number(chartData[idx][0].g_mean[ii]),           Number(chartData[idx][0].a_mean[ii]),
-                           Number(chartData[idx][0].g_atmpath[ii]),        Number(chartData[idx][0].a_atmpath[ii]),
-                           Number(chartData[idx][0].g_clw[ii]),            Number(chartData[idx][0].a_clw[ii]),   
-                           Number(chartData[idx][0].g_lapse2[ii]),         Number(chartData[idx][0].a_lapse2[ii]),   
-                           Number(chartData[idx][0].g_lapse[ii]),          Number(chartData[idx][0].a_lapse[ii]), 
-                           Number(chartData[idx][0].g_cos_ssmis[ii]),      Number(chartData[idx][0].a_cos_ssmis[ii]),
-                           Number(chartData[idx][0].g_sin_ssmis[ii]),      Number(chartData[idx][0].a_sin_ssmis[ii]),
-                           Number(chartData[idx][0].g_emiss[ii]),          Number(chartData[idx][0].a_emiss[ii]),
-                           Number(chartData[idx][0].g_ordang4[ii]),        Number(chartData[idx][0].a_ordang4[ii]),
-                           Number(chartData[idx][0].g_ordang3[ii]),        Number(chartData[idx][0].a_ordang3[ii]),
-                           Number(chartData[idx][0].g_ordang2[ii]),        Number(chartData[idx][0].a_ordang2[ii]),
-                           Number(chartData[idx][0].g_ordang1[ii]),        Number(chartData[idx][0].a_ordang1[ii])
-                       ]
-                   ]);
+                    data1.addRows([
+                        [new Date(yr, mm, dd, hh),
+                            Number(chartData[idx][0].g_mean[ii]),           Number(chartData[idx][0].a_mean[ii]),
+                            Number(chartData[idx][0].g_atmpath[ii]),        Number(chartData[idx][0].a_atmpath[ii]),
+                            Number(chartData[idx][0].g_clw[ii]),            Number(chartData[idx][0].a_clw[ii]),
+                            Number(chartData[idx][0].g_lapse2[ii]),         Number(chartData[idx][0].a_lapse2[ii]),
+                            Number(chartData[idx][0].g_lapse[ii]),          Number(chartData[idx][0].a_lapse[ii]),
+                            Number(chartData[idx][0].g_cos_ssmis[ii]),      Number(chartData[idx][0].a_cos_ssmis[ii]),
+                            Number(chartData[idx][0].g_sin_ssmis[ii]),      Number(chartData[idx][0].a_sin_ssmis[ii]),
+                            Number(chartData[idx][0].g_emiss[ii]),          Number(chartData[idx][0].a_emiss[ii]),
+                            Number(chartData[idx][0].g_ordang4[ii]),        Number(chartData[idx][0].a_ordang4[ii]),
+                            Number(chartData[idx][0].g_ordang3[ii]),        Number(chartData[idx][0].a_ordang3[ii]),
+                            Number(chartData[idx][0].g_ordang2[ii]),        Number(chartData[idx][0].a_ordang2[ii]),
+                            Number(chartData[idx][0].g_ordang1[ii]),        Number(chartData[idx][0].a_ordang1[ii])
+                        ]
+                    ]);
                 }
 
 
-		// Determine chartTitle1
-		// Any reason I couldn't use the actual value of the Statistic selection
-		// for this?
+                // Determine chartTitle1
+                // Any reason I couldn't use the actual value of the Statistic selection
+                // for this?
                 var line2 = curSrcName + ", " + chartData[idx][0].time[0];
                 log( "line2 = " + line2 );
 
@@ -449,7 +449,7 @@
                     chartTitle1 = "4th Order Angle\n" + line2;
                 }
 
-               
+
                 // formatter1 modifies format of date to be YYYYMMDDHH
                 var formatter1 = new google.visualization.DateFormat({pattern: "yyyyMMddHH"});
                 formatter1.format(data1, 0);
@@ -492,7 +492,7 @@
                 if (!CkBxGes) {
                     myView1.hideColumns( [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23] );
                     log( '!ges, Hiding 1,3,5,7,9,11,13,15,17,19,21,23');
-                } 
+                }
                 if (!CkBxAnl) {
                     myView1.hideColumns( [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24] );
                     log( '!anl, Hiding 2,4,6,8,10,12,14,16,18,20,22,24');
@@ -500,51 +500,51 @@
 
                 if( curStat === 0 ) {		// mean, columns 1 & 2
                     myView1.hideColumns( [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                                          16, 17, 18, 19, 20, 21, 22, 23, 24]);
+                        16, 17, 18, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is mean, showing 1,2');
                 }else if( curStat === 1 ){	// scan angle, columns 3 & 4
                     myView1.hideColumns( [1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                                          16, 17, 18, 19, 20, 21, 22, 23, 24]);
+                        16, 17, 18, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is scan angle, showing 3,4');
                 }else if( curStat === 2 ){	//lapse rate, columns 9 & 10
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15,
-                                          16, 17, 18, 19, 20, 21, 22, 23, 24]);
+                        16, 17, 18, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is lapse, showing 9,10');
                 }else if( curStat === 3 ){	//lapse2, columns 7 & 8
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15,
-                                          16, 17, 18, 19, 20, 21, 22, 23, 24]);
+                        16, 17, 18, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is lapse2, showing 7,8 ');
                 }else if( curStat === 4 ){	//clw, columns 5 & 6
                     myView1.hideColumns( [1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                                          16, 17, 18, 19, 20, 21, 22, 23, 24]);
+                        16, 17, 18, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is clw, showing 5,6 ');
                 }else if( curStat === 5 ){	//cos_ssmis, columns 11 & 12 
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15,
-                                          16, 17, 18, 19, 20, 21, 22, 23, 24]);
+                        16, 17, 18, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is cos_ssmis, showing 11,12 ');
                 }else if( curStat === 6 ){	//sin_ssmis, columns 13 & 14 
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15,
-                                          16, 17, 18, 19, 20, 21, 22, 23, 24]);
+                        16, 17, 18, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is sin_ssmis, showing 13,14 ');
                 }else if( curStat === 7 ){	//emiss, columns 15 & 16 
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                                          14, 17, 18, 19, 20, 21, 22, 23, 24]);
+                        14, 17, 18, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is emiss, showing 15,16 ');
                 }else if( curStat === 8 ){	//ordang1, columns 23 & 24 
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                                          14, 15, 16, 17, 18, 19, 20, 21, 22]);
+                        14, 15, 16, 17, 18, 19, 20, 21, 22]);
                     log( 'curStat is ordang1, showing 23,24 ');
                 }else if( curStat === 9 ){	//ordang2, columns 21 & 22 
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                                          14, 15, 16, 17, 18, 19, 20, 23, 24]);
+                        14, 15, 16, 17, 18, 19, 20, 23, 24]);
                     log( 'curStat is ordang2, showing 21,22 ');
                 }else if( curStat === 10 ){	//ordang3, columns 19 & 20 
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                                          14, 15, 16, 17, 18, 21, 22, 23, 24]);
+                        14, 15, 16, 17, 18, 21, 22, 23, 24]);
                     log( 'curStat is ordang3, showing 19,20 ');
                 }else if( curStat === 11 ){	//ordang4, columns 17 & 18 
                     myView1.hideColumns( [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                                          14, 15, 16, 19, 20, 21, 22, 23, 24]);
+                        14, 15, 16, 19, 20, 21, 22, 23, 24]);
                     log( 'curStat is ordang4, showing 17,18 ');
                 }
 
@@ -749,16 +749,16 @@
                     var statFound = false;
 
                     for( var i=0; i < numStatSel; ++i ){
-                       if( statSel.options[i].value === stat ){
-                          curStat = i;
-                          statFound = true;
-                          break;
-                       }
+                        if( statSel.options[i].value === stat ){
+                            curStat = i;
+                            statFound = true;
+                            break;
+                        }
                     }
 
                     if( !statFound ){
-                       var logMsg = 'Unable to match input stat: ' + stat + ' to any existing statistic, using Default';
-                       log( logMsg );
+                        var logMsg = 'Unable to match input stat: ' + stat + ' to any existing statistic, using Default';
+                        log( logMsg );
                     }
                 }
 
@@ -890,8 +890,8 @@
 
         // dataSetSelect :  callback for change in data set (used with comparison plots)
         function dataSetSelect( value ){
-           log( '-->  dataSetSelect');
-           log( '<--  dataSetSelect');
+            log( '-->  dataSetSelect');
+            log( '<--  dataSetSelect');
         }
 
 
@@ -927,8 +927,8 @@
         // isInt :  determine if input value is an integer, returning True or False
         function isInt(value) {
             return !isNaN(value) &&
-                    parseInt(Number(value)) == value &&
-                    !isNaN(parseInt(value, 10));
+                parseInt(Number(value)) == value &&
+                !isNaN(parseInt(value, 10));
         }
 
 
@@ -955,46 +955,27 @@
 <div id="plot1" style="width: 1000px; height: 400px; float:right"></div>
 <div id="png1" class="link1"></div>
 
+<div id="disclaim" style="width: 1000px; float:right">
+    <P style="background-color: lightblue;"><u><b>Disclaimer:</b></u> These are not official NWS products and should not to be relied upon for
+        operational purposes. This web site is not subject to 24/7 support, and thus may be
+        unavailable during system outages. For more information please see this
+        <a href="https://www.weather.gov/disclaimer.php">Disclaimer</a> </P>
+</div>
+
+
 <form id="satSelectForm" action="" style="position:absolute; left:2px;top:40px">
     <b>Platform:</b>
     <select id="platformSelect" onChange="platSelect(this.value)">
-        <!-- This menu will need to be customized by Install_html.sh on wcoss
-             It could be loaded using a php file, but that risks a condition where
-             a source might be missing for some reason, and we should know about that
-             if it was to happen, so it's better that a data load would fail here.  -->
         <!-- INSERT_TABLE -->
-<OPTION value="airs_aqua" id="airs_aqua"> AQUA AIRS </OPTION>
-<OPTION value="amsua_aqua" id="amsua_aqua"> AQUA AMSU-A </OPTION>
-<OPTION value="ssmis_f16" id="ssmis_f16"> F16 SMIS </OPTION>
-<OPTION value="ssmis_f17" id="ssmis_f17"> F17 SMIS </OPTION>
-<OPTION value="ssmis_f18" id="ssmis_f18"> F18 SMIS </OPTION>
-<OPTION value="sndrd1_g13" id="sndrd1_g13"> GOES-13 SNDRD1 </OPTION>
-<OPTION value="sndrd2_g13" id="sndrd2_g13"> GOES-13 SNDRD2 </OPTION>
-<OPTION value="sndrd3_g13" id="sndrd3_g13"> GOES-13 SNDRD3 </OPTION>
-<OPTION value="sndrd4_g13" id="sndrd4_g13"> GOES-13 SNDRD4 </OPTION>
-<OPTION value="sndrd1_g15" id="sndrd1_g15"> GOES-15 SNDRD1 </OPTION>
-<OPTION value="sndrd2_g15" id="sndrd2_g15"> GOES-15 SNDRD2 </OPTION>
-<OPTION value="sndrd3_g15" id="sndrd3_g15"> GOES-15 SNDRD3 </OPTION>
-<OPTION value="sndrd4_g15" id="sndrd4_g15"> GOES-15 SNDRD4 </OPTION>
-<OPTION value="seviri_m10" id="seviri_m10"> M10 SEVIRI </OPTION>
-<OPTION value="amsua_metop-a" id="amsua_metop-a"> METOP-A AMSU-A </OPTION>
-<OPTION value="avhrr_metop-a" id="avhrr_metop-a"> METOP-A AVHR </OPTION>
-<OPTION value="hirs4_metop-a" id="hirs4_metop-a"> METOP-A HIRS/4 </OPTION>
-<OPTION value="iasi_metop-a" id="iasi_metop-a"> METOP-A IASI </OPTION>
-<OPTION value="mhs_metop-a" id="mhs_metop-a"> METOP-A MHS </OPTION>
-<OPTION value="amsua_metop-b" id="amsua_metop-b"> METOP-B AMSU-A </OPTION>
-<OPTION value="hirs4_metop-b" id="hirs4_metop-b"> METOP-B HIRS/4 </OPTION>
-<OPTION value="iasi_metop-b" id="iasi_metop-b"> METOP-B IASI </OPTION>
-<OPTION value="mhs_metop-b" id="mhs_metop-b"> METOP-B MHS </OPTION>
-<OPTION value="amsua_n15" id="amsua_n15"> NOAA-15 AMSU-A </OPTION>
-<OPTION value="amsua_n18" id="amsua_n18"> NOAA-18 AMSU-A </OPTION>
-<OPTION value="avhrr_n18" id="avhrr_n18"> NOAA-18 AVHR </OPTION>
-<OPTION value="mhs_n18" id="mhs_n18"> NOAA-18 MHS </OPTION>
-<OPTION value="amsua_n19" id="amsua_n19"> NOAA-19 AMSU-A </OPTION>
-<OPTION value="hirs4_n19" id="hirs4_n19"> NOAA-19 HIRS/4 </OPTION>
-<OPTION value="mhs_n19" id="mhs_n19"> NOAA-19 MHS </OPTION>
-<OPTION value="atms_npp" id="atms_npp"> NPP ATMS </OPTION>
-<OPTION value="cris_npp" id="cris_npp"> NPP CRIS </OPTION>
+        <OPTION value="amsua_metop-b" id="amsua_metop-b"> METOP-B AMSU-A </OPTION>
+        <OPTION value="iasi_metop-b" id="iasi_metop-b"> METOP-B IASI </OPTION>
+	<OPTION value="mhs_metop-b" id="mhs_metop-b"> METOP-B MHS </OPTION>
+        <OPTION value="amsua_n15" id="amsua_n15"> NOAA-15 AMSU-A </OPTION>
+        <OPTION value="amsua_n18" id="amsua_n18"> NOAA-18 AMSU-A </OPTION>
+        <OPTION value="amsua_n19" id="amsua_n19"> NOAA-19 AMSU-A </OPTION>
+        <OPTION value="hirs4_n19" id="hirs4_n19"> NOAA-19 HIRS/4 </OPTION>
+        <OPTION value="mhs_n19" id="mhs_n19"> NOAA-19 MHS </OPTION>
+        <OPTION value="atms_npp" id="atms_npp"> NPP ATMS </OPTION>
         <!-- END_TABLE_INSERT -->
     </select>
 </form>
@@ -1007,7 +988,7 @@
         <option value="lapse">Lapse rate</option>
         <option value="lapse2">(Lapse rate)**2</option>
         <option value="clw">Cloud liquid water</option>
-        <option value="cos_ssmis">Cos for SSMIS</option> 
+        <option value="cos_ssmis">Cos for SSMIS</option>
         <option value="sin_ssmis">Sin for SSMIS</option>
         <option value="emiss"> Emissivity sensitivity</option>
         <option value="ordang1">1st order angle</option>
@@ -1079,14 +1060,7 @@
     <i> assimilated</i>
 </label>
 
-<footer>
-    <P style="background-color: lightblue;"><u><b>Disclaimer:</b></u> These are not official
-              NWS products and should not to be relied upon for operational purposes. This web
-              site is not subject to 24/7 support, and thus may be unavailable during system
-              outages. For more information please see this
-              <a href="https://www.weather.gov/disclaimer.php">Disclaimer</a>
-    </P>
-</footer>
 
 
-</BODY></HTML>
+</BODY>
+</HTML>
