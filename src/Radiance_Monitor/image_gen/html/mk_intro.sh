@@ -1,5 +1,4 @@
-#!/bin/sh
-set -ax
+#!/bin/bash
 
 #-------------------------------------------------------------
 #
@@ -17,7 +16,7 @@ echo
 echo BEGIN mk_intro.sh
 
 #-------------------------------------------------------------
-#  Both SORTED_LIST, SATYPE, and RAD_AREA should be exported from 
+#  SORTED_LIST, SATYPE, and RAD_AREA should be exported from 
 #  the install_html.sh script.  Exit if they are not defined.
 #
 if [[ ${#SORTED_LIST} -eq 0 ]]; then
@@ -27,7 +26,7 @@ if [[ ${#SORTED_LIST} -eq 0 ]]; then
 fi
 
 if [[ ${#SATYPE} -eq 0 ]]; then
-   echo 'ERROR --> $SORTED_LIST is empty, unable to generate intro.html.$RAD_AREA file.'
+   echo 'ERROR --> $SATYPE is empty, unable to generate intro.html.$RAD_AREA file.'
    echo '  exiting mk_intro.sh'
    exit
 fi
@@ -53,11 +52,6 @@ num_rows=4
 remainder=`expr $ctr % $num_rows`
 cols=`expr $ctr / $num_rows`
 num_sats=$ctr
-
-echo "  ctr       = $ctr"
-echo "  cols      = $cols"
-echo "  remainder = $remainder"
-echo "  num_sats  = $num_sats"
 
 #-------------------------------------------------------------
 #  Build the intro.html file.
@@ -97,7 +91,6 @@ while read line; do
    satype=`echo $line | gawk '{print $3}'`
 
    ctr=`expr $ctr + 1`
-   echo ctr, row_end = $ctr, $row_end			# load table data info
 
    echo '      <td>' >> $table
    echo "         <a href=${quote}./plot_summary.html?sat=${satype}${quote} target=${quote}fmain${quote}>" >> $table
