@@ -43,7 +43,7 @@
         var curSrcName;
         var curStatName;
         var globalSrc = false;
-        var useComp = false;
+        var useComp = true;
 
         /*
          *  Important note -- javascript handles all paths as relative to the displayed page.  This
@@ -59,16 +59,15 @@
          *  of compHome to point to the top of its directory.  Email me (Ed Safford) if you need help
          *  making that happen.
          */
-        //        var compSrc  = "wopr";
-        //        var compName = "GDAS";
-        //        var compHome = "https://www.emc.ncep.noaa.gov/gmb/gdas/radiance/esafford/" + compSrc;
+        var compSrc  = "nam";
+        var compName = "NAM";
+        var compHome = "https://www.emc.ncep.noaa.gov/gmb/gdas/radiance/esafford/" + compSrc;
 
 
         /* -----------------------------------
          *  drawCharts, main drawing function
          * ----------------------------------- */
         function drawCharts() {
-            //log ( "--> drawCharts");
 
             // Handles to the selection lists in the UI.
             var platformSel  = document.getElementById("platformSelect");
@@ -86,7 +85,6 @@
              * loadChanData requests data from [satname].chan.txt file
              */
             function loadChanData( file ){
-                log( '--> loadChanData ' + file );
                 if (window.XMLHttpRequest) {
                     // IE7+, Firefox, Chrome, Opera, Safari
                     var request = new XMLHttpRequest();
@@ -123,7 +121,6 @@
                         // after the channel data is loaded load the data file for the currently selected
                         // source and channel
                         var dataFile = './pngs/time/' + curSrcName + '.' + curChan + '.' + curStatName + '.time.txt';
-			log( 'loading data file: ' + dataFile );
                         loadData( dataFile );
 
                     }
@@ -133,14 +130,12 @@
                 }
                 request.send();
 
-                log( '<-- loadChanData');
             }
 
             /*
              * parseChanData loads channel data into the chanData array
              */
             function parseChanData( data ){
-                log( '--> parseChanData' );
 
                 //replace UNIX new lines
                 data = data.replace(/\r\n/g, "\n");
@@ -148,7 +143,6 @@
                 data = data.replace(/\r/g, "\n");
                 //split into rows
                 var rows = data.split("\n");
-                //log( rows.length );
 
                 var sat   = '';
                 var nchan = 0;
@@ -200,7 +194,6 @@
                     }
                 }
 
-                log( '<-- parseChanData' );
             }
 
             /*
@@ -209,7 +202,6 @@
              *    the channel menu in the UI and set the current selection.
              */
             function fillChanData( ){
-                log( '--> fillChanData, targetChan = ' + targetChan);
 
                 var nchan = chanData[0].nchan;
 
@@ -231,14 +223,12 @@
                 }
 
                 chanSel.selectedIndex = curChan;                    // set the requested chan or 0 (default)
-                //log( '<-- fillChanData');
             }
 
             /*
              * loadData loads data from comma separated value file for a given instrument/channel
              */
             function loadData( file ) {
-                log( '--> loadData' + file);
 
                 var request;
                 var request2;
@@ -247,18 +237,16 @@
                 // comp data file location
                 var loadCmpEl = document.getElementById("ckboxCmp");
                 if( loadCmpEl ) {
-                    //var CkBxCmp = document.getElementById("ckboxCmp").value;
+                    useComp = true;
                     var CkBxCmp = compSrc;
-                    log('value of CkBxCmp = ' + CkBxCmp);
 
                     if (CkBxCmp) {
-                        //cmpFile = '../' + CkBxCmp + file.substring(1);
                         cmpFile = compHome + file.substring(1);
-                        log('2nd file to load is ' + cmpFile);
                     }
                 } else {
                     useComp = false;
                 }
+
 
                 if (window.XMLHttpRequest) {
                     // IE7+, Firefox, Chrome, Opera, Safari
@@ -282,7 +270,6 @@
                 request.open('GET', file, true);
                 request.onload = function(e) {
                     if( request.status === 200 && request.readyState === 4 ) {
-                        log( 'load completed');
 
                         // see parseData for full explanation of 2nd param
                         parseData( request.responseText, 0);
@@ -292,7 +279,6 @@
                             request2.open( 'GET', cmpFile, true );
                             request2.onload = function(e){
                                 if( request2.status === 200 && request2.readyState === 4 ){
-                                    log( 'load request2 completed' );
                                     parseData( request2.responseText, 1 );
                                 } else {
                                     log( " Failed to load " + cmpFile + " ; request2.status = " + request2. status );
@@ -312,7 +298,6 @@
                     }
                 }
                 request.send();
-                log( '<-- loadData' );
             }
 
             /*
@@ -323,7 +308,6 @@
              *             that functionality in the future.
              */
             function parseData(data, idx) {
-                log( '--> parseData ,idx = ' + idx);
                 var rows = null;
 
                 if( data == null && idx == 1 ){
@@ -334,7 +318,6 @@
                     data = data.replace(/\r/g, "\n");
                     //split into rows
                     rows = data.split("\n");
-                    //log('rows.length = ' + rows.length);
 
                     var ncyc = chanData[0].ncyc;
                 }
@@ -355,18 +338,15 @@
                 // Load data for each channel using arrays for the time and gr/ar values.
                 //  [g|a][1|2] = ges|anl field 1|2  which are generic names for all available
                 //  types of data.  Note that cnt and pen only use the first set -- [g|a]1**[]
+	        //  
+	        // This follows the same naming convention as plot_time.html.glb where r[n] 
+	        // indicates region 1 - 5 (actually now surface type).  However only region 1 (all) 
+	        // is valid for regional sources.  I've left this naming convention in place in 
+		// case the move is ever made to add support for region/surface type.
                 //------------------------------------------------------------------------------
                 var time = [];
                 var g1r1 = [];      var g2r1 = [];
-                var g1r2 = [];      var g2r2 = [];
-                var g1r3 = [];      var g2r3 = [];
-                var g1r4 = [];      var g2r4 = [];
-                var g1r5 = [];      var g2r5 = [];
                 var a1r1 = [];      var a2r1 = [];
-                var a1r2 = [];      var a2r2 = [];
-                var a1r3 = [];      var a2r3 = [];
-                var a1r4 = [];      var a2r4 = [];
-                var a1r5 = [];      var a2r5 = [];
 
                 var firstCyc;
                 var lastCyc;
@@ -379,70 +359,38 @@
                 //  where dates match.
                 //----------------------------------------------------------------
                 if (idx == 1) {
-                    //for (var ii = 0; ii < rows.length - 1; ii++) {
                     for (var ii = 0; ii < chanData[0].ncyc - 1; ii++) {
-                        //time.push (chartData[curChan][0].time[ii]);
                         g1r1.push(null);        a1r1.push(null);
-                        g1r2.push(null);        a1r2.push(null);
-                        g1r3.push(null);        a1r3.push(null);
-                        g1r4.push(null);        a1r4.push(null);
-                        g1r5.push(null);        a1r5.push(null);
-
                         g2r1.push(null);        a2r1.push(null);
-                        g2r2.push(null);        a2r2.push(null);
-                        g2r3.push(null);        a2r3.push(null);
-                        g2r4.push(null);        a2r4.push(null);
-                        g2r5.push(null);        a2r5.push(null);
                     }
 
                     firstCyc = chartData[curChan][0].time[0];
                     lastCyc = chartData[curChan][0].time[ncyc - 1];
-                    //log(' firstCyc, lastCyc = ' + firstCyc + ', ' + lastCyc);
                 }
 
                 if( rows ) {
-                    log('rows: ' + rows);
-                    log('idx: ' + idx );
                     for (var i = 0; i < rows.length - 1; i++) {
-                        //log('rows.length = ' + rows.length);
+
                         // this if statement helps to skip empty rows
                         if (rows[i]) {
                             var column = rows[i].split(",");
 
                             if (idx == 1) {
-                                //log('parseData, COLUMNS: ' + column);
 
                                 if ((Number(column[1]) > Number(firstCyc)) ||
                                     (Number(column[1]) < Number(lastCyc))) {
-                                    //log(' need to skip ' + Number(column[1]));
 
                                 } else {
                                     for (var jj = 0; jj < rows.length - 1; jj++) {
                                         if (Number(column[1]) == Number(chartData[curChan][0].time[jj])) {
                                             time[jj] = column[1];
-                                            //ges, anl count values, regions 1-5
+                                            
                                             g1r1[jj] = getValue(column[2]);
-                                            a1r1[jj] = getValue(column[7]);
-                                            g1r2[jj] = getValue(column[3]);
-                                            a1r2[jj] = getValue(column[8]);
-                                            g1r3[jj] = getValue(column[4]);
-                                            a1r3[jj] = getValue(column[9]);
-                                            g1r4[jj] = getValue(column[5]);
-                                            a1r4[jj] = getValue(column[10]);
-                                            g1r5[jj] = getValue(column[6]);
-                                            a1r5[jj] = getValue(column[11]);
+                                            a1r1[jj] = getValue(column[3]);
 
                                             if (curStat > 1) {
-                                                g2r1[jj] = getValue(column[12]);
-                                                a2r1[jj] = getValue(column[17]);
-                                                g2r2[jj] = getValue(column[13]);
-                                                a2r2[jj] = getValue(column[18]);
-                                                g2r3[jj] = getValue(column[14]);
-                                                a2r3[jj] = getValue(column[19]);
-                                                g2r4[jj] = getValue(column[15]);
-                                                a2r4[jj] = getValue(column[20]);
-                                                g2r5[jj] = getValue(column[16]);
-                                                a2r5[jj] = getValue(column[21]);
+                                                g2r1[jj] = getValue(column[4]);
+                                                a2r1[jj] = getValue(column[5]);
                                             }
 
                                             break;
@@ -450,53 +398,25 @@
                                     }
                                 }
                             } else {
-  	  		                    //log('parsing data for 1st chart');
-                                //log('parseData, COLUMNS: ' + column);
                                 time.push(column[1]);
                                 g1r1.push(getValue(column[2]));
-                                //log('pushed to g1r1: ' + g1r1);
                                 a1r1.push(getValue(column[3]));
-                                //log('pushed to a1r1: ' + a1r1);
-                                //g1r2.push(getValue(column[3]));
-                                // a1r2.push(getValue(column[8]));
-                                // g1r3.push(getValue(column[4]));
-                                // a1r3.push(getValue(column[9]));
-                                // g1r4.push(getValue(column[5]));
-                                // a1r4.push(getValue(column[10]));
-                                // g1r5.push(getValue(column[6]));
-                                // a1r5.push(getValue(column[11]));
 
                                 if (curStat > 1) {
- 				                    //log('parsing data for 2nd chart');
                                     g2r1.push(getValue(column[4]));
                                     a2r1.push(getValue(column[5]));
-                                    // g2r1.push(getValue(column[12]));
-                                    // a2r1.push(getValue(column[17]));
-                                    // g2r2.push(getValue(column[13]));
-                                    // a2r2.push(getValue(column[18]));
-                                    // g2r3.push(getValue(column[14]));
-                                    // a2r3.push(getValue(column[19]));
-                                    // g2r4.push(getValue(column[15]));
-                                    // a2r4.push(getValue(column[20]));
-                                    // g2r5.push(getValue(column[16]));
-                                    // a2r5.push(getValue(column[21]));
                                 }
                             }
                         }
                     }
                 }
-                var chanObj = {time: time, g1r1: g1r1, g1r2: g1r2, g1r3: g1r3, g1r4: g1r4, g1r5: g1r5,
-                    a1r1: a1r1, a1r2: a1r2, a1r3: a1r3, a1r4: a1r4, a1r5: a1r5,
-                    g2r1: g2r1, g2r2: g2r2, g2r3: g2r3, g2r4: g2r4, g2r5: g2r5,
-                    a2r1: a2r1, a2r2: a2r2, a2r3: a2r3, a2r4: a2r4, a2r5: a2r5
-                };
+
+                var chanObj = { time: time, g1r1: g1r1, a1r1: a1r1, g2r1: g2r1, a2r1: a2r1 };
 
                 if (idx === 1 || idx === 0) {
                     chartData[curChan][idx] = chanObj;
                 }
 
-                //log( 'chartData[curChan][idx] = ' + curChan + ', ' + idx + ', ' + chartData[curChan][idx]);
-                log( '<-- parseData ');
             }
 
 
@@ -519,7 +439,6 @@
             //   target[Src|Stat|Chan] values using the current UI settings
             //
             if( initialLoad ) {
-                log('initial Load is true ');
 
                 // Determine if the src, stat and/or chan were set via the input html stream.
                 // These should all be human readable inputs (src, stat, chan);
@@ -527,11 +446,9 @@
                 //      - Translate inputs into interface values
                 //      - Anything unspecified defaults to the first in the list (airs_aqua, cnt, 1)
 
-                //var dataSrc = curDataSrc;
                 var src = new Uri(url).getQueryParamValue('sat');
                 var stat = new Uri(url).getQueryParamValue('stat');  // this is cnt, pen, omgnbc, totcor, omgbc
                 var chan = new Uri(url).getQueryParamValue('channel');  // this is actual channel#, not sequential#
-                log( 'src, stat, chan = ' + src + ', ' + stat + ', ' + chan);
 
                 // --------------------------------------------------------------------------------
                 // Attempt to match input src to an existing string in the platformSel list.
@@ -542,7 +459,6 @@
                     var srcFound = false;
 
                     for (var i = 0; i < numPlatSel; ++i) {
-                        //if( platformSel.options[i].innerHTML === src ) {
                         if( platformSel.options[i].value === src ) {
                             targetSrc = src;
                             srcFound = true;
@@ -589,7 +505,6 @@
 
                 statSel.selectedIndex = curStat;
                 curStatName = statSel.options[statSel.selectedIndex].value;
-                log( 'curStatName: ' + curStatName );
 
                 // ------------------------------------------------------------
                 // Chan is validated by ensuring it's a positive integer.
@@ -617,7 +532,6 @@
                 //  Not initial load, use the UI settings to set curSrc, curStat
                 // --------------------------------------------------------------
                 targetSrc  = platformSel.options[platformSel.selectedIndex].value;
-                log( 'targetSrc: ' + targetSrc );
 
                 curSrcName = targetSrc;
                 curSrc     = platformSel.selectedIndex;
@@ -630,7 +544,6 @@
             // -----------------------------------------------------------------------
             var foundSrc = false;
             for (var i = 0; i < platformSel.options.length; i++) {
-                log( ' comparing ' + platformSel.options[i].value + ' to ' + targetSrc );
                 if ( platformSel.options[i].value === targetSrc ) {
                     platformSel.selectedIndex = i;
                     curSrc = i;
@@ -663,13 +576,11 @@
                 curChan = chanSel.selectedIndex;
                 curStat = statSel.selectedIndex;
                 curStatName = statSel.options[statSel.selectedIndex].value;
-                log( 'curChan = ' + curChan );
 
                 var platformSel  = document.getElementById("platformSelect");
                 curSrc = platformSel.options[platformSel.selectedIndex].text;
 
                 var dataFile = './pngs/time/' + curSrcName + '.' + curChan + '.' + curStatName + '.time.txt';
-                log( 'reloading datafile: ' + dataFile );
                 loadData(dataFile);
             }
 
@@ -685,7 +596,6 @@
          *      load data from the chartData structure to the chart structure(s)
          */
         function fillCharts(){
-            log( '--> fillCharts, useComp = ' + useComp );
 
             // ---------------------------------------------------------------
             //   Define data1, the container for chart1's information.
@@ -695,24 +605,12 @@
             data1 = new google.visualization.DataTable();
 
             data1.addColumn('date', 'time');
-            data1.addColumn('number', 'ges, global');     //data1.addColumn('number', 'ges, land');
-            //data1.addColumn('number', 'ges, water');      data1.addColumn('number', 'ges, ice');
-            //data1.addColumn('number', 'ges, mixed');
-            data1.addColumn('number', 'anl, global');     //data1.addColumn('number', 'anl, land');
-            //data1.addColumn('number', 'anl, water');      data1.addColumn('number', 'anl, ice');
-            //data1.addColumn('number', 'anl, mixed');
+            data1.addColumn('number', 'ges, all rgn'); 
+            data1.addColumn('number', 'anl, all rgn');
 
             if( useComp ) {
-                data1.addColumn('number', compName + '_ges, global');
-                data1.addColumn('number', compName + '_ges, land');
-                data1.addColumn('number', compName + '_ges, water');
-                data1.addColumn('number', compName + '_ges, ice');
-                data1.addColumn('number', compName + '_ges, mixed');
-                data1.addColumn('number', compName + '_anl, global');
-                data1.addColumn('number', compName + '_anl, land');
-                data1.addColumn('number', compName + '_anl, water');
-                data1.addColumn('number', compName + '_anl, ice');
-                data1.addColumn('number', compName + '_anl, mixed');
+                data1.addColumn('number', compName + '_ges, all rgn');
+                data1.addColumn('number', compName + '_anl, all rgn');
             }
 
             // set up data2 if plot is other than count or penalty (2 charts drawn)
@@ -720,26 +618,14 @@
                 data2 = new google.visualization.DataTable();
 
                 data2.addColumn('date', 'time');
-                data2.addColumn('number', 'ges, global');       //data2.addColumn('number', 'ges, land');
-                //data2.addColumn('number', 'ges, water');        data2.addColumn('number', 'ges, ice');
-                //data2.addColumn('number', 'ges, mixed');
-                data2.addColumn('number', 'anl, global');       //data2.addColumn('number', 'anl, land');
-                //data2.addColumn('number', 'anl, water');        data2.addColumn('number', 'anl, ice');
-                //data2.addColumn('number', 'anl, mixed');
+                data2.addColumn('number', 'ges, all rgn');
+                data2.addColumn('number', 'anl, all rgn');
                 if( useComp ) {
-                    data2.addColumn('number', compName + '_ges, global');
-                    data2.addColumn('number', compName + '_ges, land');
-                    data2.addColumn('number', compName + '_ges, water');
-                    data2.addColumn('number', compName + '_ges, ice');
-                    data2.addColumn('number', compName + '_ges, mixed');
-                    data2.addColumn('number', compName + '_anl, global');
-                    data2.addColumn('number', compName + '_anl, land');
-                    data2.addColumn('number', compName + '_anl, water');
-                    data2.addColumn('number', compName + '_anl, ice');
-                    data2.addColumn('number', compName + '_anl, mixed');
+                    data2.addColumn('number', compName + '_ges, all rgn');
+                    data2.addColumn('number', compName + '_anl, all rgn');
                 }
             }
-
+           
             var idx = curChan;
             var ncyc = chanData[0].ncyc;
 
@@ -750,7 +636,6 @@
             var vAxisFormat = '0.##E+0';
 
             var line2 = curSrcName + ", " + chartData[idx][0].time[0];
-            log( "line2 = " + line2, + " curStatName = " + curStatName );
             // --------------------------------------------------------------
             //   load data1 and (as needed) data2 objects to make the chart(s)
             // --------------------------------------------------------------
@@ -758,11 +643,8 @@
             if( curStatName === "cnt" ) {
                 chartTitle1 = "Number of Observations\n" + line2;
                 chartTitle2 = "";
-                log( 'curStat is 0, chartData[idx][0] = ' + idx, +' ' + chartData[idx[0]]);
-                log( 'chartData[idx][0].time[0] = ' + chartData[idx][0].time[0]);
 
                 for (var ii = 0; ii < ncyc; ii++) {
-                    //log( 'chartData[idx][0].time[ii] = ' + chartData[idx][0].time[ii] + ' , ' + ii);
                     var yr = chartData[idx][0].time[ii].substr(0, 4);
                     var mm = Number(chartData[idx][0].time[ii].substr(4, 2)) -1;  // stupidity!  mm is range 0-11, not 1-12 according to some idiot at google
                     var dd = chartData[idx][0].time[ii].substr(6, 2);
@@ -771,27 +653,16 @@
                     if( useComp ) {
                         data1.addRows([
                             [new Date(yr, mm, dd, hh),
-                                Number(chartData[idx][0].g1r1[ii]), Number(chartData[idx][0].g1r2[ii]),
-                                Number(chartData[idx][0].g1r3[ii]), Number(chartData[idx][0].g1r4[ii]),
-                                Number(chartData[idx][0].g1r5[ii]), Number(chartData[idx][0].a1r1[ii]),
-                                Number(chartData[idx][0].a1r2[ii]), Number(chartData[idx][0].a1r3[ii]),
-                                Number(chartData[idx][0].a1r4[ii]), Number(chartData[idx][0].a1r5[ii]),
-                                Number(chartData[idx][1].g1r1[ii]), Number(chartData[idx][1].g1r2[ii]),
-                                Number(chartData[idx][1].g1r3[ii]), Number(chartData[idx][1].g1r4[ii]),
-                                Number(chartData[idx][1].g1r5[ii]), Number(chartData[idx][1].a1r1[ii]),
-                                Number(chartData[idx][1].a1r2[ii]), Number(chartData[idx][1].a1r3[ii]),
-                                Number(chartData[idx][1].a1r4[ii]), Number(chartData[idx][1].a1r5[ii])]
+                                Number(chartData[idx][0].g1r1[ii]), 
+	                        Number(chartData[idx][0].a1r1[ii]),
+                                Number(chartData[idx][1].g1r1[ii]), 
+	                        Number(chartData[idx][1].a1r1[ii])]
                         ]);
                     } else {
-                        //log('adding chartData[idx][0].g1r1[ii] : ' +chartData[idx][0].g1r1[ii]);
-                        //log('adding chartData[idx][0].a1r1[ii] : ' +chartData[idx][0].a1r1[ii]);
                         data1.addRows([
                             [new Date(yr, mm, dd, hh),
-                                Number(chartData[idx][0].g1r1[ii]), Number(chartData[idx][0].a1r1[ii])]
-                                // Number(chartData[idx][0].g1r3[ii]), Number(chartData[idx][0].g1r4[ii]),
-                                // Number(chartData[idx][0].g1r5[ii]), Number(chartData[idx][0].a1r1[ii]),
-                                // Number(chartData[idx][0].a1r2[ii]), Number(chartData[idx][0].a1r3[ii]),
-                                // Number(chartData[idx][0].a1r4[ii]), Number(chartData[idx][0].a1r5[ii])]
+                                Number(chartData[idx][0].g1r1[ii]), 
+			        Number(chartData[idx][0].a1r1[ii])]
                         ]);
                     }
                 }
@@ -807,33 +678,22 @@
                     if( useComp ) {
                         data1.addRows([
                             [new Date(yr, mm, dd, hh),
-                                Number(chartData[idx][0].g1r1[ii]), Number(chartData[idx][0].g1r2[ii]),
-                                Number(chartData[idx][0].g1r3[ii]), Number(chartData[idx][0].g1r4[ii]),
-                                Number(chartData[idx][0].g1r5[ii]), Number(chartData[idx][0].a1r1[ii]),
-                                Number(chartData[idx][0].a1r2[ii]), Number(chartData[idx][0].a1r3[ii]),
-                                Number(chartData[idx][0].a1r4[ii]), Number(chartData[idx][0].a1r5[ii]),
-                                Number(chartData[idx][1].g1r1[ii]), Number(chartData[idx][1].g1r2[ii]),
-                                Number(chartData[idx][1].g1r3[ii]), Number(chartData[idx][1].g1r4[ii]),
-                                Number(chartData[idx][1].g1r5[ii]), Number(chartData[idx][1].a1r1[ii]),
-                                Number(chartData[idx][1].a1r2[ii]), Number(chartData[idx][1].a1r3[ii]),
-                                Number(chartData[idx][1].a1r4[ii]), Number(chartData[idx][1].a1r5[ii])
+                                Number(chartData[idx][0].g1r1[ii]),
+				Number(chartData[idx][0].a1r1[ii]),
+                                Number(chartData[idx][1].g1r1[ii]), 
+			        Number(chartData[idx][1].a1r1[ii])
                             ]
                         ]);
                     } else {
                         data1.addRows([
                             [new Date(yr, mm, dd, hh),
-                                Number(chartData[idx][0].g1r1[ii]), //Number(chartData[idx][0].g1r2[ii]),
-                                //Number(chartData[idx][0].g1r3[ii]), Number(chartData[idx][0].g1r4[ii]),
-                                //Number(chartData[idx][0].g1r5[ii]),
+                                Number(chartData[idx][0].g1r1[ii]),
                                 Number(chartData[idx][0].a1r1[ii])]
-                                //Number(chartData[idx][0].a1r2[ii]), Number(chartData[idx][0].a1r3[ii]),
-                                //Number(chartData[idx][0].a1r4[ii]), Number(chartData[idx][0].a1r5[ii])]
                         ]);
                     }
                 }
             } else {
                 // all other cases we load data for 2 charts (avg & sdv)
-                log('ncyc: ' + ncyc);
                 for (var ii = 0; ii < ncyc; ii++) {
                     var yr = chartData[idx][0].time[ii].substr(0, 4);
                     var mm = Number(chartData[idx][0].time[ii].substr(4, 2)) - 1;   // and yet more
@@ -842,55 +702,29 @@
                     if( useComp ) {
                         data1.addRows([
                             [new Date(yr, mm, dd, hh),
-                                Number(chartData[idx][0].g1r1[ii]), Number(chartData[idx][0].g1r2[ii]),
-                                Number(chartData[idx][0].g1r3[ii]), Number(chartData[idx][0].g1r4[ii]),
-                                Number(chartData[idx][0].g1r5[ii]), Number(chartData[idx][0].a1r1[ii]),
-                                Number(chartData[idx][0].a1r2[ii]), Number(chartData[idx][0].a1r3[ii]),
-                                Number(chartData[idx][0].a1r4[ii]), Number(chartData[idx][0].a1r5[ii]),
-                                Number(chartData[idx][1].g1r1[ii]), Number(chartData[idx][1].g1r2[ii]),
-                                Number(chartData[idx][1].g1r3[ii]), Number(chartData[idx][1].g1r4[ii]),
-                                Number(chartData[idx][1].g1r5[ii]), Number(chartData[idx][1].a1r1[ii]),
-                                Number(chartData[idx][1].a1r2[ii]), Number(chartData[idx][1].a1r3[ii]),
-                                Number(chartData[idx][1].a1r4[ii]), Number(chartData[idx][1].a1r5[ii])
+                                Number(chartData[idx][0].g1r1[ii]),
+                                Number(chartData[idx][0].a1r1[ii]),
+                                Number(chartData[idx][1].g1r1[ii]),
+                                Number(chartData[idx][1].a1r1[ii])
                             ]
                         ]);
                         data2.addRows([
                             [new Date(yr, mm, dd, hh),
-                                Number(chartData[idx][0].g2r1[ii]), Number(chartData[idx][0].g2r2[ii]),
-                                Number(chartData[idx][0].g2r3[ii]), Number(chartData[idx][0].g2r4[ii]),
-                                Number(chartData[idx][0].g2r5[ii]), Number(chartData[idx][0].a2r1[ii]),
-                                Number(chartData[idx][0].a2r2[ii]), Number(chartData[idx][0].a2r3[ii]),
-                                Number(chartData[idx][0].a2r4[ii]), Number(chartData[idx][0].a2r5[ii]),
-                                Number(chartData[idx][1].g2r1[ii]), Number(chartData[idx][1].g2r2[ii]),
-                                Number(chartData[idx][1].g2r3[ii]), Number(chartData[idx][1].g2r4[ii]),
-                                Number(chartData[idx][1].g2r5[ii]), Number(chartData[idx][1].a2r1[ii]),
-                                Number(chartData[idx][1].a2r2[ii]), Number(chartData[idx][1].a2r3[ii]),
-                                Number(chartData[idx][1].a2r4[ii]), Number(chartData[idx][1].a2r5[ii])
+                                Number(chartData[idx][0].g2r1[ii]),
+                                Number(chartData[idx][0].a2r1[ii]),
+                                Number(chartData[idx][1].g2r1[ii]),
+                                Number(chartData[idx][1].a2r1[ii]),
                             ]
                         ]);
                     } else {
                         data1.addRows([
                             [new Date(yr, mm, dd, hh),
                                 Number(chartData[idx][0].g1r1[ii]), Number(chartData[idx][0].a1r1[ii])]
-                                // Number(chartData[idx][0].g1r1[ii]), Number(chartData[idx][0].g1r2[ii]),
-                                // Number(chartData[idx][0].g1r3[ii]), Number(chartData[idx][0].g1r4[ii]),
-                                // Number(chartData[idx][0].g1r5[ii]), Number(chartData[idx][0].a1r1[ii]),
-                                // Number(chartData[idx][0].a1r2[ii]), Number(chartData[idx][0].a1r3[ii]),
-                                // Number(chartData[idx][0].a1r4[ii]), Number(chartData[idx][0].a1r5[ii])]
                         ]);
-                        log( 'ii: ' + ii + ' idx: ' + idx);
-                        log('chartData[idx][0].g2r1[ii]: ' + chartData[idx][0].g2r1[ii]);
-                        log('chartData[idx][0].a2r1[ii]: ' + chartData[idx][0].a2r1[ii]);
-                        log('data2: ' + data2);
 
                         data2.addRows([
                             [new Date(yr, mm, dd, hh),
                                 Number(chartData[idx][0].g2r1[ii]), Number(chartData[idx][0].a2r1[ii])]
-                                // Number(chartData[idx][0].g2r1[ii]), Number(chartData[idx][0].g2r2[ii]),
-                                // Number(chartData[idx][0].g2r3[ii]), Number(chartData[idx][0].g2r4[ii]),
-                                // Number(chartData[idx][0].g2r5[ii]), Number(chartData[idx][0].a2r1[ii]),
-                                // Number(chartData[idx][0].a2r2[ii]), Number(chartData[idx][0].a2r3[ii]),
-                                // Number(chartData[idx][0].a2r4[ii]), Number(chartData[idx][0].a2r5[ii])]
                         ]);
                     }
                 }
@@ -899,16 +733,15 @@
                 vAxisFormat = "0.##";
 
                 // set chart titles
-                log( 'curStatName: ' + curStatName );
                 if (curStatName === 'omgnbc') {     // omgnbc avg & sdv
-                    chartTitle1 = "Avg   Obs(K) - Ges|Anl (w/o Bias Correction)\n" + line2;
-                    chartTitle2 = "Sdv   Obs(K) - Ges|Anl (w/o Bias Correction)\n" + line2;
+                    chartTitle1 = "Avg   Obs - Ges|Anl w/o Bias Correction (K)\n" + line2;
+                    chartTitle2 = "Sdv   Obs - Ges|Anl w/o Bias Correction (K)\n" + line2;
                 } else if (curStatName === 'totcor') {     // bias correction
                     chartTitle1 = "Avg   Bias Correction\n" + line2;
                     chartTitle2 = "Sdv   Bias Correction\n" + line2;
                 } else if (curStatName === 'omgbc') {     // omgbc avg & sdv
-                    chartTitle1 = "Avg   Obs(K) - Ges|Anl (w/ Bias Correction)\n" + line2;
-                    chartTitle2 = "Sdv   Obs(K) - Ges|Anl (w/ Bias Correction)\n" + line2;
+                    chartTitle1 = "Avg   Obs - Ges|Anl w/ Bias Correction (K)\n" + line2;
+                    chartTitle2 = "Sdv   Obs - Ges|Anl w/ Bias Correction (K)\n" + line2;
                 } else if( curStatName === 'fixang') {
                     chartTitle1 = "Avg   Fixed Angle Correction (K)\n" + line2;
                     chartTitle2 = "Sdv   Fixed Angle Correction (K)\n" + line2;
@@ -999,7 +832,6 @@
             google.visualization.events.addListener(chart1, 'ready', function () {
                 var printDiv = document.getElementById( "png1" );
                 chart1.innerHTML = '<img src="' + chart1.getImageURI() + '">';
-                //log( "innerHTML = " + chart1.innerHTML );
                 printDiv.outerHTML = '<a id="png1" class="link1" href="' + chart1.getImageURI() + '">Printable version </a>';
             });
 
@@ -1012,9 +844,7 @@
             //-------------------------------------------------------------------
             var myView1 = new google.visualization.DataView( data1 );
 
-            log( 'curStat: ' + curStat );
             if( curStat > 1 ){
-		log( 'working on chart 2');
                 chart2 = new google.visualization.LineChart( document.getElementById('plot2'));
                 myView2 = new google.visualization.DataView( data2 );
 
@@ -1028,81 +858,36 @@
             // turn on/off viewed data according to current checkbox configuration
             var CkBxGes = document.getElementById( "ckboxGes"    ).checked;
             var CkBxAnl = document.getElementById( "ckboxAnl"    ).checked;
-            //var CkBxGlb = true;
-            // var CkBxLnd = false;
-            // var CkBxWtr = false;
-            // var CkBxIce = false;
-            // var CkBxMxd = false;
-//            var CkBxGlb = document.getElementById( "ckboxGlobal" ).checked;
-//            var CkBxLnd = document.getElementById( "ckboxLand"   ).checked;
-//            var CkBxWtr = document.getElementById( "ckboxWater"  ).checked;
-//            var CkBxIce = document.getElementById( "ckboxIce"    ).checked;
-//            var CkBxMxd = document.getElementById( "ckboxMixed"  ).checked;
 
             // these were the first cut at comparison source controls
             if( useComp ) {
                 var CkBxCmp = document.getElementById("ckboxCmp").checked;
 
                 if (!CkBxCmp) {
-                    myView1.hideColumns([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+                    myView1.hideColumns([3, 4]);
                     if (curStat > 1) {
-                        myView2.hideColumns([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+                        myView2.hideColumns([3, 4]);
                     }
                 }
             }
 
             if (!CkBxGes) {
-                //myView1.hideColumns( [1, 2, 3, 4, 5, 11, 12, 13, 14, 15] );
-                myView1.hideColumns( [1]);
+                myView1.hideColumns( [1, 3]);
                 if( curStat > 1 ){
-                    //myView2.hideColumns( [1, 2, 3, 4, 5, 11, 12, 13, 14, 15] );
-                    myView2.hideColumns( [1] );
+                    myView2.hideColumns( [1, 3] );
                 }
             }
             if (!CkBxAnl) {
-                //myView1.hideColumns( [6, 7, 8, 9, 10, 16, 17, 18, 19, 20] );
-                myView1.hideColumns( [2]);
+                myView1.hideColumns( [2, 4]);
                 if( curStat > 1 ){
-                    //myView2.hideColumns( [6, 7, 8, 9, 10, 16, 17, 18, 19, 20] );
-                    myView2.hideColumns( [2] );
+                    myView2.hideColumns( [2, 4] );
                 }
             }
-            // if (!CkBxGlb) {
-            //     myView1.hideColumns( [1, 6, 11, 16] );
-            //     if( curStat > 1 ){
-            //         myView2.hideColumns( [1, 6, 11, 16] );
-            //     }
-            // }
-            // if (!CkBxLnd) {
-            //     myView1.hideColumns( [2, 7, 12, 17] );
-            //     if( curStat > 1 ){
-            //         myView2.hideColumns( [2, 7, 12, 17] );
-            //     }
-            // }
-            // if (!CkBxWtr) {
-            //     myView1.hideColumns( [3, 8, 13, 18] );
-            //     if( curStat > 1 ){
-            //         myView2.hideColumns( [3, 8, 13, 18] );
-            //     }
-            // }
-            // if (!CkBxIce) {
-            //     myView1.hideColumns( [4, 9, 14, 19] );
-            //     if( curStat > 1 ){
-            //         myView2.hideColumns( [4, 9, 14, 19] );
-            //     }
-            // }
-            // if (!CkBxMxd) {
-            //     myView1.hideColumns( [5, 10, 15, 20] );
-            //     if( curStat > 1 ){
-            //         myView2.hideColumns( [5, 10, 15, 20] );
-            //     }
-            // }
 
             // ---------------------
             // display the chart(s)
             // ---------------------
             chart1.draw(myView1, options1);
-
 
             hndlChart2 = document.getElementById( 'plot2' );
             if( curStat > 1 ){
@@ -1142,28 +927,6 @@
             if( numColumns == 2 ){
                 var dataPts1 = [];
                 var dataPts2 = [];
-
-                // determine new chi value by finding the ges/anl setting and the displayed region
-                var region = 0;
-
-                //if ( CkBxGlb ) {
-                //    region = 0;
-                // } else if( CkBxLnd ) {
-                //     region = 1;
-                // } else if( CkBxWtr ) {
-                //     region = 2;
-                // }else if( CkBxIce ) {
-                //     region = 3;
-                // } else {
-                //     region = 4;
-                // }
-                //
-                // if( CkBxAnl ) {
-                //     region =region + 5;
-                // }
-                //var newLab = "&chi;  " + chanData[curChan].chi[region];
-                //chiLabel.innerHTML = newLab;
-                //chiLabel.style.display = "block";
 
                 // -----------------------------------------------------------------------------------
                 // calculate avg and sdv values (uses the stats.js package (handle is "st" below)
@@ -1238,10 +1001,6 @@
             var curSelStr = '?sat=' + curSrcName + '&channel=' + chanName + '&stat=' + curStatName;
             parent.window.value = curSelStr;
 
-            //var testStr = parent.window.value;
-            //log( 'testStr = ' + testStr );
-
-            log( '<-- fillCharts');
         }
 
 
@@ -1291,7 +1050,6 @@
                 chanSel.removeChild(chanSel.firstChild);
 
             // reset channel and chart data structures, reset curChan
-            log( 'clear chanData');
             chanData = [];
             chartData  = [[]];
             curChan  = 0;
@@ -1316,17 +1074,11 @@
 
         // getValue : return the input value if it's a number and null if it's rmiss (-999.0)
         function getValue( value ) {
-            //return( Number(value));
             var rval = null;
             var tval = Number( value );
-            //log( 'getValue, input value, tval = ' + value + ' ' + tval );
-            //log( ' value, tval = ', + value + ', ' + tval );
             if( tval != -999.0 ){
                 rval = tval;
-            } //else {
-                //  rval = 0;
-                //log( 'returning null from getValue: ' + rval );
-            //}
+            }
             return rval;
         }
 
@@ -1377,16 +1129,14 @@
     <b>Platform:</b>
     <select id="platformSelect" onChange="platSelect(this.value)">
         <!-- INSERT_TABLE -->
-        <OPTION value="amsua_metop-b" id="amsua_metop-b"> METOP-B AMSU-A </OPTION>
-        <OPTION value="iasi_metop-b" id="iasi_metop-b"> METOP-B IASI </OPTION>
-	<OPTION value="mhs_metop-b" id="mhs_metop-b"> METOP-B MHS </OPTION>
-        <OPTION value="amsua_n15" id="amsua_n15"> NOAA-15 AMSU-A </OPTION>
-        <OPTION value="amsua_n18" id="amsua_n18"> NOAA-18 AMSU-A </OPTION>
-        <OPTION value="amsua_n19" id="amsua_n19"> NOAA-19 AMSU-A </OPTION>
-        <OPTION value="hirs4_n19" id="hirs4_n19"> NOAA-19 HIRS/4 </OPTION>
-        <OPTION value="mhs_n19" id="mhs_n19"> NOAA-19 MHS </OPTION>
-        <OPTION value="atms_npp" id="atms_npp"> NPP ATMS </OPTION>
-
+            <OPTION value="amsua_metop-b" id="amsua_metop-b"> METOP-B AMSU-A </OPTION>
+            <OPTION value="iasi_metop-b" id="iasi_metop-b"> METOP-B IASI </OPTION>
+            <OPTION value="mhs_metop-b" id="mhs_metop-b"> METOP-B MHS </OPTION>
+            <OPTION value="amsua_n15" id="amsua_n15"> NOAA-15 AMSU-A </OPTION>
+            <OPTION value="amsua_n18" id="amsua_n18"> NOAA-18 AMSU-A </OPTION>
+            <OPTION value="amsua_n19" id="amsua_n19"> NOAA-19 AMSU-A </OPTION>
+            <OPTION value="hirs4_n19" id="hirs4_n19"> NOAA-19 HIRS/4 </OPTION>
+            <OPTION value="mhs_n19" id="mhs_n19"> NOAA-19 MHS </OPTION>
         <!-- END_TABLE_INSERT -->
     </select>
 </form>
@@ -1427,14 +1177,12 @@
    the ckboxCmp object and use that for locating the comparison data files.
 -->
 
-<!-- RM line to install OPTIONAL_COMPARE 
 <table style="position:absolute;left:2px;top:150px;width:150px" id="compareTable">
     <caption style="test-indent:2em"> <b>Compare With:</b> </caption>
     <tr><td>
-        <input type="checkbox" id="ckboxCmp" name="ckboxCmp" value="wopr" onclick="boxCheck(this.value)"><label for="ckboxCmp">operational GDAS</label></input>
+        <input type="checkbox" id="ckboxCmp" name="ckboxCmp" value="nam" onclick="boxCheck(this.value)"><label for="ckboxCmp">Operational NAM</label></input>
     </td></tr>
 </table>
-     RM line to install OPTIONAL_COMPARE -->
 
 
 <table style="position:absolute;left:2px;top:210px;width:150px">

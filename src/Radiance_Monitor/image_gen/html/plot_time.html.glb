@@ -909,14 +909,14 @@
 
                 // set chart titles
                 if (curStatName === 'omgnbc') {     // omgnbc avg & sdv
-                    chartTitle1 = "Avg   Ges|Anl (w/o Bias Correction) - Obs(K)\n" + line2;
-                    chartTitle2 = "Sdv   Ges|Anl (w/o Bias Correction) - Obs(K)\n" + line2;
+                    chartTitle1 = "Avg   Obs - Ges|Anl (w/o Bias Correction)(K)\n" + line2;
+                    chartTitle2 = "Sdv   Obs - Ges|Anl (w/o Bias Correction)(K)\n" + line2;
                 } else if (curStatName === 'totcor') {     // bias correction
                     chartTitle1 = "Avg   Bias Correction\n" + line2;
                     chartTitle2 = "Sdv   Bias Correction\n" + line2;
                 } else if (curStatName === 'omgbc') {     // omgbc avg & sdv
-                    chartTitle1 = "Avg   Ges|Anl (w/ Bias Correction) - Obs(K)\n" + line2;
-                    chartTitle2 = "Sdv   Ges|Anl (w/ Bias Correction) - Obs(K)\n" + line2;
+                    chartTitle1 = "Avg   Obs - Ges|Anl (w/ Bias Correction)(K)\n" + line2;
+                    chartTitle2 = "Sdv   Obs - Ges|Anl (w/ Bias Correction)(K)\n" + line2;
                 } else if( curStatName === 'fixang') {
                     chartTitle1 = "Avg   Fixed Angle Correction (K)\n" + line2;
                     chartTitle2 = "Sdv   Fixed Angle Correction (K)\n" + line2;
@@ -1358,6 +1358,11 @@
 <div id="png1" class="link1"></div>
 <div id="plot2" style="width: 1000px; height: 400px; float:right;"></div>
 <div id="png2" class="link2"></div>
+<div id="disclaim" style="width: 1000px; float:right">^M
+    <P style="background-color: lightblue;"><u><b>Disclaimer:</b></u> These are not official NWS products 
+        and should not to be relied upon for operational purposes. This web site is not subject to 24/7 support, 
+	and thus may be unavailable during system outages. For more information please see this
+        <a href="https://www.weather.gov/disclaimer.php">Disclaimer</a> </P> </div>
 
 <label id="source" style="position: absolute; left: 2px; top:12px"><b> Source:</b></label>
 <label id="suffix" value="INSERT_SUFFIX" style="position: absolute; left: 72px; top:12px; color: blue"><b>INSERT_SUFFIX</b></label>
@@ -1508,14 +1513,5 @@
 <img id="chartImg" />
 
 </BODY>
-
-<footer>
-    <P style="background-color: lightblue;"><u><b>Disclaimer:</b></u> These are not official
-              NWS products and should not to be relied upon for operational purposes. This web
-              site is not subject to 24/7 support, and thus may be unavailable during system
-              outages. For more information please see this
-              <a href="https://www.weather.gov/disclaimer.php">Disclaimer</a>
-    </P>
-</footer>
 
 </HTML>

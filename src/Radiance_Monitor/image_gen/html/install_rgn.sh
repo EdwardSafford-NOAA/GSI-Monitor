@@ -16,35 +16,33 @@ do_cmp=0
 cmp_src=""
 
 
-#  This section intentionally left commented out.  The comparison
-#  option is not yet implemented for regional sources.
 #--------------------------------------------------------------
 #  Allow user to enable comparison plots 
 #
-#echo "Do you wish to enable data plots to include comparison to"
-#echo " operational GDAS data, or another data source?"
-#echo ""
-#echo -n "  Enter YES to enable comparison plots, any other input to disable.  > "
-#read text
-#short=`echo $text | cut -c1`
-#
-#if [[ $short = "Y" || $short = "y" ]]; then
-#   do_cmp=1
-#   cmp_src="GDAS"
-#
-#   echo "Please specify the suffix of your comparison data source,"
-#   echo "  or just hit the return key to use the operational GDAS as "
-#   echo "  the comparison source"
-#   echo ""
-#   echo -n " > "
-#   read text
-#
-#   if [[ ${#text} -gt 0 ]]; then
-#     cmp_src=${text}
-#   fi
-#
-#   echo "${cmp_src} will be used as the comparison source."
-#fi
+echo "Do you wish to enable data plots to include comparison to"
+echo " operational NAM data, or another regional data source?"
+echo ""
+echo -n "  Enter YES to enable comparison plots, any other input to disable.  > "
+read text
+short=`echo $text | cut -c1`
+
+if [[ $short = "Y" || $short = "y" ]]; then
+   do_cmp=1
+   cmp_src="NAM"
+
+   echo "Please specify the suffix of your comparison data source,"
+   echo "  or just hit the return key to use the operational NAM as "
+   echo "  the comparison source"
+   echo ""
+   echo -n " > "
+   read text
+
+   if [[ ${#text} -gt 0 ]]; then
+     cmp_src=${text}
+   fi
+
+   echo "${cmp_src} will be used as the comparison source."
+fi
 
 #--------------------------------------------------------------
 #  Create a temporary working directory.
@@ -64,10 +62,6 @@ cd $workdir
 #  Find the first date with data.  Start at today and work
 #  backwards.  If not found stop after 5 days and exit.
 #
-
-#if [[ $RUN == "" ]]; then
-#   RUN=gdas
-#fi
 
 PDATE=`${MON_USH}/rgn_find_cycle.pl --dir ${TANKverf} --mon radmon`
 echo PDATE=$PDATE
@@ -283,40 +277,49 @@ done
 #  for future implementation. 
 #
 
-#if [[ $do_cmp == 1 ]]; then
+if [[ $do_cmp == 1 ]]; then
 
-#   comp_html_files="plot_summary.html plot_time.html"
-
+   comp_html_files="plot_summary.html plot_time.html"
+   comp_source_value="nam"
+   echo "comp_source_value = $comp_source_value"
+   comp_source_name="Operational NAM"
    #-------------------------------------------------------------------------
    #  If cmp_src == GDAS we only have to uncomment the comparison check box
    #  in the html files.  If it's another source then we'll have to change
    #  the values of compSrc, compName, and compHome in the html files.
    #
 
-#   for html_file in $comp_html_files; do
+   for html_file in $comp_html_files; do
 
-#      tmp_html=./tmp_${html_file}
-#      rm -f ${tmp_html}
+      tmp_html=./tmp_${html_file}
+      rm -f ${tmp_html}
 
       #----------------------------------------------------------------------------
       # remove the OPTIONAL_COMPARE lines which uncomments the comparison check box
-#      sed '/OPTIONAL_COMPARE/d' ./${html_file} > ${tmp_html}
-#      mv -f ${tmp_html} ${html_file}
+      sed '/OPTIONAL_COMPARE/d' ./${html_file} > ${tmp_html}
+      mv -f ${tmp_html} ${html_file}
 
       #---------------------------------------------------------------
       # if we're using a source other than GDAS make that change here
-#      if [[ $cmp_src != "GDAS" ]]; then
-#         cmp_sc_line="            var compSrc  = \"${cmp_src}\";"
-#         cmp_nm_line="            var compName = \"${cmp_src}\";"
-#         cmp_hm_line="            var compHome = \"../${cmp_src}/\";"
-#
-#         sed -i "/var compSrc /c ${cmp_sc_line}" ${html_file}
-#         sed -i "/var compName /c ${cmp_nm_line}" ${html_file}
-#         sed -i "/var compHome /c ${cmp_hm_line}" ${html_file}
-#      fi
-#
-#   done
-#fi
+      if [[ $cmp_src != "NAM" ]]; then
+         cmp_sc_line="            var compSrc  = \"${cmp_src}\";"
+         cmp_nm_line="            var compName = \"${cmp_src}\";"
+         cmp_hm_line="            var compHome = \"../${cmp_src}/\";"
+
+         sed -i "/var compSrc /c ${cmp_sc_line}" ${html_file}
+         sed -i "/var compName /c ${cmp_nm_line}" ${html_file}
+         sed -i "/var compHome /c ${cmp_hm_line}" ${html_file}
+
+	 comp_source_value="${cmp_src}"
+	 comp_source_name="Experimental $cmp_src"
+      fi
+
+      echo "replacing COMP_SOURCE_VALUE"
+      sed -i "s/COMP_SOURCE_VALUE/${comp_source_value}/" ${html_file}
+      sed -i "s/COMP_SOURCE_NAME/${comp_source_name}/" ${html_file}
+
+   done
+fi
 
 #--------------------------------------------------------------
 # Generate the intro.html file.
