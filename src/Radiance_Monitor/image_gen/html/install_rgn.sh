@@ -13,14 +13,17 @@ echo "BEGIN install_rgn.sh"
 echo ""
 
 do_cmp=0
-cmp_src=""
+cmp_src_default="NAM"
+cmp_src=${cmp_src_default}
+comp_source_value="nam"
+comp_source_name="Operational NAM"
 
 
 #--------------------------------------------------------------
 #  Allow user to enable comparison plots 
 #
 echo "Do you wish to enable data plots to include comparison to"
-echo " operational NAM data, or another regional data source?"
+echo " operational ${cmp_src} data, or another regional data source?"
 echo ""
 echo -n "  Enter YES to enable comparison plots, any other input to disable.  > "
 read text
@@ -28,10 +31,9 @@ short=`echo $text | cut -c1`
 
 if [[ $short = "Y" || $short = "y" ]]; then
    do_cmp=1
-   cmp_src="NAM"
 
    echo "Please specify the suffix of your comparison data source,"
-   echo "  or just hit the return key to use the operational NAM as "
+   echo "  or just hit the return key to use the operational ${cmp_src} as "
    echo "  the comparison source"
    echo ""
    echo -n " > "
@@ -280,13 +282,10 @@ done
 if [[ $do_cmp == 1 ]]; then
 
    comp_html_files="plot_summary.html plot_time.html"
-   comp_source_value="nam"
-   echo "comp_source_value = $comp_source_value"
-   comp_source_name="Operational NAM"
-   #-------------------------------------------------------------------------
-   #  If cmp_src == GDAS we only have to uncomment the comparison check box
-   #  in the html files.  If it's another source then we'll have to change
-   #  the values of compSrc, compName, and compHome in the html files.
+   #--------------------------------------------------------------------------
+   #  If cmp_src == $cmp_src_default we only have to uncomment the comparison
+   #  check box in the html files.  If it's another source then we'll have to
+   #  change the values of compSrc, compName, and compHome in the html files.
    #
 
    for html_file in $comp_html_files; do
@@ -301,7 +300,7 @@ if [[ $do_cmp == 1 ]]; then
 
       #---------------------------------------------------------------
       # if we're using a source other than GDAS make that change here
-      if [[ $cmp_src != "NAM" ]]; then
+      if [[ ${cmp_src} != ${cmp_src_default} ]]; then
          cmp_sc_line="            var compSrc  = \"${cmp_src}\";"
          cmp_nm_line="            var compName = \"${cmp_src}\";"
          cmp_hm_line="            var compHome = \"../${cmp_src}/\";"

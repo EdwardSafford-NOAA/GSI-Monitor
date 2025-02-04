@@ -15,14 +15,15 @@ echo ""
 echo ""
 
 do_cmp=0
-cmp_src=""
+cmp_src_default="GDAS"
+cmp_src=${cmp_src_default}
 
 
 #--------------------------------------------------------------
 #  Allow user to enable comparison plots 
 #
 echo "Do you wish to enable data plots to include comparison to"
-echo " operational GDAS data, or another data source?"
+echo " operational ${cmp_src} data, or another data source?"
 echo ""
 echo -n "  Enter YES to enable comparison plots, any other input to disable.  > "
 read text
@@ -30,10 +31,9 @@ short=`echo $text | cut -c1`
 
 if [[ $short = "Y" || $short = "y" ]]; then
    do_cmp=1
-   cmp_src="GDAS"
 
    echo "Please specify the suffix of your comparison data source,"
-   echo "  or just hit the return key to use the operational GDAS as "
+   echo "  or just hit the return key to use the operational ${cmp_src} as "
    echo "  the comparison source"
    echo ""
    echo -n " > "
@@ -282,7 +282,7 @@ if [[ $do_cmp == 1 ]]; then
    comp_html_files="plot_summary.html plot_time.html"
 
    #-------------------------------------------------------------------------
-   #  If cmp_src == GDAS we only have to uncomment the comparison check box
+   #  If cmp_src == $cmp_src_default we only have to uncomment the comparison check box
    #  in the html files.  If it's another source then we'll have to change
    #  the values of compSrc, compName, and compHome in the html files.
    #
@@ -299,9 +299,9 @@ if [[ $do_cmp == 1 ]]; then
       mv -f ${tmp_html} ${html_file}
 
       #---------------------------------------------------------------
-      # if we're using a source other than GDAS make that change here
+      # if we're using a source other than $cmp_src_default that change here
       #
-      if [[ $cmp_src != "GDAS" ]]; then
+      if [[ $cmp_src != ${cmp_src_default} ]]; then
          cmp_sc_line="            var compSrc  = \"${cmp_src}\";"
          cmp_nm_line="            var compName = \"${cmp_src}\";"
          cmp_hm_line="            var compHome = \"../${cmp_src}/\";"
@@ -331,7 +331,7 @@ new_index="index.html"
 
 $NCP ${RADMON_IMAGE_GEN}/html/${index_file} .
 sed s/INSERT_SUFFIX/${SUFFIX}/g $index_file > ${tmp_index}
-if [[ $SUFFIX == "GFS" || $SUFFIX == "nrx" ]]; then
+if [[ $SUFFIX == ${cmp_src_default} ]]; then
    sed s/Experimental/Operational/1 ${tmp_index} > ${new_index}
 fi
 
