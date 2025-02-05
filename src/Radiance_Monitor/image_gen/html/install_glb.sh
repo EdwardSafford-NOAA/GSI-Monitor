@@ -17,6 +17,8 @@ echo ""
 do_cmp=0
 cmp_src_default="GDAS"
 cmp_src=${cmp_src_default}
+comp_source_value="gdas"
+comp_source_name="Operational GDAS"
 
 
 #--------------------------------------------------------------
@@ -309,7 +311,14 @@ if [[ $do_cmp == 1 ]]; then
          sed -i "/var compSrc /c ${cmp_sc_line}" ${html_file}
          sed -i "/var compName /c ${cmp_nm_line}" ${html_file}
          sed -i "/var compHome /c ${cmp_hm_line}" ${html_file}
+
+	 comp_source_value="${cmp_src}"
+         comp_source_name="Experimental $cmp_src"
+
       fi
+      
+      sed -i "s/COMP_SOURCE_VALUE/${comp_source_value}/" ${html_file}
+      sed -i "s/COMP_SOURCE_NAME/${comp_source_name}/" ${html_file}
 
    done
 fi
