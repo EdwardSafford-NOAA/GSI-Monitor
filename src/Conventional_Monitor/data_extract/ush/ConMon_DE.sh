@@ -186,6 +186,8 @@ fi
 if [[ -e ${C_TANKDIR}/info/global_convinfo.txt ]]; then
    echo " overriding convinfo definition"
    export convinfo=${C_TANKDIR}/info/global_convinfo.txt
+else
+   convinfo=
 fi
 
 #---------------------------------------------
@@ -197,6 +199,7 @@ if [[ -e ${C_TANKDIR}/info/gdas_conmon_base.txt ]]; then
    export conmon_base=${C_TANKDIR}/info/gdas_conmon_base.txt
 fi
 
+echo "check test"
 
 exit_value=0
 if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
@@ -228,8 +231,14 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
 		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
       
       elif [[ $MY_MACHINE = "wcoss2" ]]; then
-        $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
-		-l select=1:mem=5000M ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
+         $SUB -v "NET=${NET}, C_TANKDIR=${C_TANKDIR}, C_LOGDIR=${C_LOGDIR}, cnvstat=${cnvstat}, pgrbf00=${pgrbf00}, \
+                  pgrbf06=${pgrbf06}, CNVSTAT_LOCATION=${cnvstat_location}, COMPONENT=${COMPONENT}, \
+                  C_DATDIR=${C_DATDIR}, C_GDATDIR=${C_GDATDIR}, C_COMIN=${C_COMIN}, C_COMINm6h=${C_COMINm6h}, \
+                  CONMON_WORK_DIR=${CONMON_WORK_DIR}, PDATE=${PDATE}, PDY=${PDY}, CYC=${CYC}, HOMEgdas_conmon=${HOMEgdas_conmon}, \
+		  WGRIB2=${WGRIB2}, USHconmon=${USHconmon}, CLEAN_TANKDIR=${CLEAN_TANKDIR}, convinfo=${convinfo}, gfs_ver=${gfs_ver},
+		  HOMEgfs_conmon=${HOMEgfs_conmon}, EXECconmon=${EXECconmon}" \
+              -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
+              -l select=1:mem=12G ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
       fi
 
    else
