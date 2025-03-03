@@ -10,6 +10,8 @@
    echo start exnam_conmon.sh
 
    err=0
+   export NCP=${NCP:-/bin/cp -f}
+   export Z=gz
 
    #-------------------------
    # confirm $cnvstat exists
@@ -31,35 +33,28 @@
 
    if [[ ${err} -eq 0 ]]; then
       export PDATE=${PDY}${CYC}
-     
+      echo PDATE = $PDATE
+
       if [[ ! -d ${TANKDIR_conmon} ]]; then 
          mkdir -p ${TANKDIR_conmon}
       fi
 
-      ###############################################
-      # Expand C_DATA (stmp work space) and cd to it
-      #
-      export CONMON_WORK_DIR=$CONMON_WORK_DIR/DE.${PDATE}
 
       #-------------------------------------------------------------
       #  Ensure necessary work and TANKDIR directories are in place
       #-------------------------------------------------------------
-      if [[ ! -d ${CONMON_WORK_DIR} ]]; then
-         mkdir -p $CONMON_WORK_DIR
-         mkdir -p ${TANKDIR_conmon}/horz_hist/anl
-         mkdir -p ${TANKDIR_conmon}/horz_hist/ges
-         mkdir -p ${TANKDIR_conmon}/time_vert
-      fi
-      cd $CONMON_WORK_DIR
+      mkdir -p ${TANKDIR_conmon}/horz_hist/anl
+      mkdir -p ${TANKDIR_conmon}/horz_hist/ges
+      mkdir -p ${TANKDIR_conmon}/time_vert
 
       #------------------------------------------------------------------
       #  Copy data files file to local data directory.  
       #  Untar cnvstat file.  
       #------------------------------------------------------------------
-      $NCP $cnvstat ./cnvstat.$PDATE
+      ${NCP} ${cnvstat} ./cnvstat.${PDATE}
 
-      tar -xvf ./cnvstat.$PDATE
-      rm cnvstat.$PDATE
+      tar -xvf ./cnvstat.${PDATE}
+      rm cnvstat.${PDATE}
    
       netcdf=0
       count=`ls diag* | grep ".nc4" | wc -l`
@@ -71,10 +66,9 @@
          done
       fi
 
-      echo "netcdf: $netcdf"
+      echo "netcdf: ${netcdf}"
       export CONMON_NETCDF=${netcdf}
-      $UNCOMPRESS ./*.${Z}
-
+      ${UNCOMPRESS} *.gz
 
       #---------------------------------------
       #  run the time-vert extraction script
@@ -106,6 +100,11 @@
    elif [[ $rc_time_vert -ne 0 ]]; then
       echo "ERROR repored from time_vert.sh:  $rc_time_vert"
       err=$rc_time_vert
+   fi
+
+   if [[ ${KEEPDATA} = "NO" ]]; then
+      cd ${C_DATA}/..
+      rm -rf ${C_DATA}
    fi
 
    echo "end exgdas_conmon.sh, exit value = ${err}"

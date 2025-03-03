@@ -46,9 +46,11 @@ echo "--> time_vert.sh"
    if [ $CONMON_NETCDF -eq 0 ]; then
 
       for run in ges anl; do
-   
-         ${UNCOMPRESS} ./diag_conv_${run}.${PDATE}.${Z}
- 
+  
+	 if [[ -e ./diag_conv_${run}.${PDATE}.gz ]]; then 
+            ${UNCOMPRESS} ./diag_conv_${run}.${PDATE}.gz
+         fi
+
          cat << EOF > input
 &input
          input_file=diag_conv_${run}.${PDATE},

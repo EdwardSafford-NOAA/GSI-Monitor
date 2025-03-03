@@ -19,7 +19,6 @@ set -xa
    echo "mtype           = $mtype (type = $type)"
    echo "subtype         = $subtype"
    echo "hint            = $hint"
-   echo "workdir         = $workdir"
    echo "INPUT_FILE    = ${INPUT_FILE}"
 
 

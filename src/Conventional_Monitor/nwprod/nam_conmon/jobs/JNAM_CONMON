@@ -5,15 +5,28 @@
 #########################################################
 echo "--> JNAM_CONMON"
 
-set -xa
+#set -xa
 
 echo `date` $0 `date -u` begin
-export PS4='$SECONDS + '
+#export PS4='$SECONDS + '
 
 ########################################################### 
 # set up temp working directory space
 ###########################################################
 export CONMON_WORK_DIR=${CONMON_WORK_DIR:-/tmpnwprd}
+export KEEPDATA=${KEEPDATA:-YES}
+export C_DATAROOT=${C_DATAROOT:-${CONMON_WORK_DIR}}
+
+job=${job:-nam_conmon}
+pid=${pid:-$$}
+export C_DATA=${C_DATA:-${C_DATAROOT}/${job}.${pid}}
+echo C_DATA = $C_DATA
+
+if [[ -e ${C_DATA} ]]; then
+   rm -rf ${C_DATA}
+fi
+mkdir -p ${C_DATA}
+cd ${C_DATA}
 
 
 #####################
@@ -26,6 +39,8 @@ export CONMON_AREA=rgn
 
 export VERBOSE=${VERBOSE:-YES}
 export CLEAN_TANKDIR=${CLEAN_TANKDIR:-YES}
+export COMPRESS=${COMPRESS:-gzip}
+export UNCOMPRESS=${UNCOMPRESS:-gunzip}
 
 
 ###################################################################
@@ -39,7 +54,7 @@ export TANKDIR_conmon=${C_TANKDIR}/conmon.${PDY}
 export COM_IN=${COM_IN:-${COMROOT}/${NET}/${version}}
 export C_COMIN=${C_COMIN:-$COM_IN/${CONMON_SUFFIX}.${PDY}}
 
-case $CYC in
+case ${CYC} in
    00) export rgnHH=t00z
        export rgnTM=tm00;;
    01) export rgnHH=t06z
@@ -92,20 +107,10 @@ esac
 
 export cnvstat=${cnvstat:-${C_COMIN}/${CONMON_SUFFIX}.${rgnHH}.cnvstat.${rgnTM}}
 
-
 ########################################################
 # Execute the script.
 # 
 ${CONMONSH:-$HOMEnam_conmon/scripts/exnam_conmon.sh}
 ########################################################
-
-################################
-# Remove the Working Directory
-################################
-KEEPDATA=${KEEPDATA:-YES}
-cd ${CONMON_WORK_DIR}
-if [ ${KEEPDATA} = NO ] ; then
-  rm -rf ${CONMON_WORK_DIR}
-fi
 
 echo "<-- JNAM_CONMON"

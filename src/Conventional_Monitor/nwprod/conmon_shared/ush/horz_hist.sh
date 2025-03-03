@@ -6,13 +6,10 @@
 #
 #------------------------------------------------------------------
 
-   set -ax
-
    echo "--> horz_hist.sh"
    date
    rc=0
 
-   echo "CONMON_SUFFIX = $CONMON_SUFFIX"
    export hint=10    ##(mb) the plot pressure interval press+-hint
 
    #----------------------------------------------------------
@@ -42,9 +39,10 @@
 
    for type in ps q t uv; do
 
-      eval stype=\${${type}_TYPE}
-      eval nreal=\${nreal_${type}}
-      exec=read_${type}
+      eval export stype=\${${type}_TYPE}
+      eval export nreal=\${nreal_${type}}
+      export type=${type}
+      export exec=read_${type}
 
       #---------------------------------
       #  decoding the dignostic file
@@ -52,10 +50,11 @@
 
       for dtype in ${stype}; do
 
-         mtype=`echo ${dtype} | cut -f1 -d_ | xargs`
-         subtype=`echo ${dtype} | cut -f2 -d_ | xargs`
+         export mtype=`echo ${dtype} | cut -f1 -d_ | xargs`
+         export subtype=`echo ${dtype} | cut -f2 -d_ | xargs`
 
          for run in ges anl; do
+            export run=${run}
 
             #-------------------------------------------------------------
             #  Because few things in life are convenient or consistent, 
@@ -115,7 +114,7 @@
             $UNCOMPRESS ${low_cnt_file}.gz
          fi
 
-	 gdate=`${NDATE} -6 ${PDATE}`
+ 	 gdate=`${NDATE} -6 ${PDATE}`
          prev_low_cnt_file=${TANKDIR_prev_conmon}/horz_hist/${run}/low_cnt.${run}.${gdate}
          if [[ -e ${prev_low_cnt_file}.gz ]]; then
             $UNCOMPRESS ${prev_low_cnt_file}.gz
@@ -125,8 +124,8 @@
              --lcf ${low_cnt_file} --plcf ${prev_low_cnt_file} \
              --cyc0 ${PDATE} --cyc1 ${gdate} \
              --errf ${TANKDIR_conmon}/horz_hist/${run}/err_rpt.${run}.${PDATE}
-      fi
-   done
+       fi
+    done
 
 echo "<-- horz_hist.sh"
 
