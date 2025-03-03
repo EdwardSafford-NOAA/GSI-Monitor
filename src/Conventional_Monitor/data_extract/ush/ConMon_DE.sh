@@ -199,8 +199,6 @@ if [[ -e ${C_TANKDIR}/info/gdas_conmon_base.txt ]]; then
    export conmon_base=${C_TANKDIR}/info/gdas_conmon_base.txt
 fi
 
-echo "check test"
-
 exit_value=0
 if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
    #------------------------------------------------------------------
@@ -232,10 +230,10 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
       
       elif [[ $MY_MACHINE = "wcoss2" ]]; then
          $SUB -v "NET=${NET}, C_TANKDIR=${C_TANKDIR}, C_LOGDIR=${C_LOGDIR}, cnvstat=${cnvstat}, pgrbf00=${pgrbf00}, \
-                  pgrbf06=${pgrbf06}, CNVSTAT_LOCATION=${cnvstat_location}, COMPONENT=${COMPONENT}, \
+                  pgrbf06=${pgrbf06}, CNVSTAT_LOCATION=${cnvstat_location}, COMPONENT=${COMPONENT}, DO_DATA_RPT=${DO_DATA_RPT}, \
                   C_DATDIR=${C_DATDIR}, C_GDATDIR=${C_GDATDIR}, C_COMIN=${C_COMIN}, C_COMINm6h=${C_COMINm6h}, \
                   CONMON_WORK_DIR=${CONMON_WORK_DIR}, PDATE=${PDATE}, PDY=${PDY}, CYC=${CYC}, HOMEgdas_conmon=${HOMEgdas_conmon}, \
-		  WGRIB2=${WGRIB2}, USHconmon=${USHconmon}, CLEAN_TANKDIR=${CLEAN_TANKDIR}, convinfo=${convinfo}, gfs_ver=${gfs_ver},
+		  WGRIB2=${WGRIB2}, USHconmon=${USHconmon}, CLEAN_TANKDIR=${CLEAN_TANKDIR}, convinfo=${convinfo}, gfs_ver=${gfs_ver}, \
 		  HOMEgfs_conmon=${HOMEgfs_conmon}, EXECconmon=${EXECconmon}" \
               -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
               -l select=1:mem=12G ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON

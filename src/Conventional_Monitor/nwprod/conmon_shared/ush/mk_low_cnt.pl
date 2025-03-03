@@ -92,7 +92,6 @@
    my %nobs_hash;
    foreach ( @nobs_data ) {
       my @words = split /,/, $_;
-      print " words = @words\n";
       my $key = trim( $words[0] ) . "_" . trim( $words[1] );
       my $value = trim( $words[2] );
       $nobs_hash{ $key } = $value;
@@ -108,19 +107,12 @@
    my %base_hash;
    foreach ( @base_data ) {
       my @words = split /,/, $_;
-      print " words = @words\n";
       my $base_hr = trim( $words[0] );
       my $key = trim( $words[1] );
       my $value = trim( $words[2] );
 
-      print "base_hr, hr = $base_hr, $hr \n" ;
-
       if( $base_hr == $hr ) {
-         print " adding $value to hash with key $key\n";
          $base_hash{ $key } = $value;
-      }
-      else {
-         print " not this hour\n";
       }
    }
 
@@ -143,14 +135,16 @@
      my $bound = $base_hash{ $key }; 
      my $avg   = $bound;
 
-     #--------------------------------------------
-     #  start with a gross check of 65% of average
-     #
-     $bound = $bound * 0.65;
+     if (defined $bound) {
+        #--------------------------------------------
+        #  start with a gross check of 65% of average
+        #
+        $bound = $bound * 0.65;
 
-     if( $nobs < $bound ) {
-        print FILE "$key, $nobs, $bound, $avg\n";
-     }
+        if( $nobs < $bound ) {
+           print FILE "$key, $nobs, $bound, $avg\n";
+        }
+      }
    } 
    close( FILE );
 
