@@ -245,7 +245,7 @@
 
    echo; echo "end exgdas_conmon.sh.sms, exit value = ${err}"; echo
 
-   if [[ ${SAVE_WORK} = "NO" ]]; then
+   if [[ ${KEEPDATA} = "NO" ]]; then
       cd ${workdir}/..
       rm -rf ${workdir}
    fi

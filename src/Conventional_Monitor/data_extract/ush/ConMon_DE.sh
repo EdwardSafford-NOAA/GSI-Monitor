@@ -234,7 +234,7 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
                   C_DATDIR=${C_DATDIR}, C_GDATDIR=${C_GDATDIR}, C_COMIN=${C_COMIN}, C_COMINm6h=${C_COMINm6h}, \
                   CONMON_WORK_DIR=${CONMON_WORK_DIR}, PDATE=${PDATE}, PDY=${PDY}, CYC=${CYC}, HOMEgdas_conmon=${HOMEgdas_conmon}, \
 		  WGRIB2=${WGRIB2}, USHconmon=${USHconmon}, CLEAN_TANKDIR=${CLEAN_TANKDIR}, convinfo=${convinfo}, gfs_ver=${gfs_ver}, \
-		  HOMEgfs_conmon=${HOMEgfs_conmon}, EXECconmon=${EXECconmon}" \
+		  HOMEgfs_conmon=${HOMEgfs_conmon}, EXECconmon=${EXECconmon}, KEEPDATA=${KEEPDATA}" \
               -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
               -l select=1:mem=12G ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
       fi

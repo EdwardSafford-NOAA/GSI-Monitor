@@ -270,11 +270,9 @@ if [[ -e ${cnvstat} ]]; then
 		${HOMEnam_conmon}/jobs/JNAM_CONMON
       
    elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
-#      ${SUB} -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=30:00 \
-#  	      -N ${jobname} -l select=1:mem=5000M ${HOMEnam_conmon}/jobs/JNAM_CONMON
       $SUB -v "C_TANKDIR=${C_TANKDIR}, C_LOGDIR=${C_LOGDIR}, cnvstat=${cnvstat}, \
                CNVSTAT_LOCATION=${cnvstat_location}, CONMON_WORK_DIR=${CONMON_WORK_DIR}, \
-               C_DATDIR=${C_DATDIR}, C_COMIN=${C_COMIN}, \
+               C_DATDIR=${C_DATDIR}, C_COMIN=${C_COMIN}, KEEPDATA=${KEEPDATA}, \
                PDY=${PDY}, CYC=${CYC}, HOMEnam_conmon=${HOMEnam_conmon}, \
                WGRIB2=${WGRIB2}, USHconmon=${USHconmon}, CLEAN_TANKDIR=${CLEAN_TANKDIR}, \
                EXECconmon=${EXECconmon}" \

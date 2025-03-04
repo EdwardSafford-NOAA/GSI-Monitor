@@ -1,5 +1,4 @@
 #!/bin/bash
-set -xa
 
 #-------------------------------------------------------
 #
@@ -14,7 +13,6 @@ set -xa
    echo "type            = $type"
    echo "PDATE           = $PDATE"
    echo "EXECconmon      = $EXECconmon"
-   echo "cycle           = $cycle"
    echo "nreal           = $nreal"
    echo "mtype           = $mtype (type = $type)"
    echo "subtype         = $subtype"

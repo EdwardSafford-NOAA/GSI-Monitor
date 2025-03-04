@@ -72,8 +72,7 @@ export PDY_m6h=`echo $m6h_date|cut -c1-8`
 export C_COMIN_m6h=${C_COMIN_m6h:-$C_COM_IN/${RUN}.${PDY_m6h}}
 
 export CONMON_AREA=${CONMON_AREA:-glb}
-export SAVE_WORK=${SAVE_WORK:-NO}
-
+export KEEPDATA=${KEEPDATA:-YES}
 
 ########################################################
 # Execute the script.

@@ -1,5 +1,4 @@
 #!/bin/bash
-set -xa
 
 #------------------------------------------------------------
 #
@@ -14,7 +13,6 @@ echo "--> diag2grad_q_case.sh"
    echo "type          = $type"
    echo "PDATE         = $PDATE"
    echo "EXECconmon      = $EXECconmon"
-   echo "cycle         = $cycle"
    echo "run           = $run  "
    echo "nreal         = $nreal"
    echo "mtype         = $mtype (type = $type)"

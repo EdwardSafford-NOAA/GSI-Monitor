@@ -17,6 +17,7 @@ source $MON_CONFIG
 export MONITOR=conmon
 export AREA=${AREA:-glb}
 export RUN=${RUN:-gdas}
+export KEEPDATA=NO
 
 export WEBDIR=${WEBDIR:-/home/people/emc/www/htdocs/gmb/gdas/es_conv}
 
