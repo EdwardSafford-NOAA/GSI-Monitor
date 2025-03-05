@@ -197,7 +197,11 @@ if compgen -G "${OZN_DATA_DIR}/time/*${PDATE}*.ieee_d*" > /dev/null; then
 
    if [[ $MY_MACHINE = "wcoss2" ]]; then
       $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${errfile} \
-           -V -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
+           -v "OZNMON_SUFFIX=${OZNMON_SUFFIX}, PDATE=${PDATE}, RUN=${RUN}, NCP=${NCP}, \
+	      OZN_DATA_DIR=${OZN_DATA_DIR}, OZN_TANKDIR_STATS=${OZN_TANKDIR_STATS}, \
+	      FIXgdas_ozn=${FIXgdas_ozn}, PDY=${PDY}, CYC=$CYC, DO_DATA_RPT=${DO_DATA_RPT}, \
+              OZNSTAT=${OZNSTAT}" \
+           -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
 
    elif [[ $MY_MACHINE = "hera" ]]; then
       $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
