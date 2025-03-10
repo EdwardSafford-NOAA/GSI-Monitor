@@ -187,7 +187,7 @@ if [[ -e ${C_TANKDIR}/info/global_convinfo.txt ]]; then
    echo " overriding convinfo definition"
    export convinfo=${C_TANKDIR}/info/global_convinfo.txt
 else
-   convinfo=
+   convinfo=""
 fi
 
 #---------------------------------------------
