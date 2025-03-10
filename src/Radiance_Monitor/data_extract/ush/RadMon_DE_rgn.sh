@@ -295,8 +295,15 @@ cd ${MON_STMP}
 rm -rf ${DATA}
 mkdir -p ${DATA}
 
-logfile=$R_LOGDIR/DE.${PDY}.${cyc}.log
-export jlogfile=${R_LOGDIR}/jlogfile.${PDY}.${cyc}
+logfile=${R_LOGDIR}/DE.${PDY}.${cyc}.log
+if [[ -e ${logfile} ]]; then
+   rm -f ${logfile}
+fi
+
+errfile=${R_LOGDIR}/DE.${PDY}.${cyc}.err
+if [[ -e ${errfile} ]]; then
+   rm -f ${errfile}
+fi
 
 job=$HOMEnam/jobs/JNAM_VERFRAD
 
@@ -305,8 +312,13 @@ if [[ $MY_MACHINE = "hera" ]]; then
         -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${job}
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/DE.${PDY}.${cyc}.err \
-        -V -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${errfile} \
+	-v "RADMON_SUFFIX=${RADMON_SUFFIX}, radstat=${radstat}, biascr=${biascr}, PDY=${PDY}, cyc=${cyc}, \
+	   DATA=${DATA}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, NET=${NET}, RUN=${RUN}, RAD_AREA=${RAD_AREA}, \
+	   HOMEradmon=${HOMEradmon}, HOMEnam=${HOMEnam}, NDATE=${NDATE}, TANKverf=${TANKverf}, \
+	   KEEPDATA=${KEEPDATA}, COMPRESS=${COMPRESS}, UNCOMPRESS=${UNCOMPRESS}, FIXgdas=${FIXgdas}, \
+	   GSI_MON_BIN=${GSI_MON_BIN}" \
+        -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
 fi
 
 

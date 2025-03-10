@@ -165,9 +165,9 @@ ${RADMONSH:-${SCRnam}/exnam_verfrad.sh} ${PDY} ${cyc}
 ################################
 # Remove the Working Directory
 ################################
-KEEPDATA=${KEEPDATA:-NO}
-if [ ${KEEPDATA} = NO ] ; then 
-  cd $DATAROOT
-  rm -rf $DATA 
-fi
+#KEEPDATA=${KEEPDATA:-NO}
+#if [ ${KEEPDATA} = NO ] ; then 
+#  cd $DATAROOT
+#  rm -rf $DATA 
+#fi
 

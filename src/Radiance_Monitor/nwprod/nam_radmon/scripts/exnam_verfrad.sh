@@ -183,6 +183,11 @@ elif [[ $rc_time -ne 0 ]]; then
    err=$rc_time
 fi
 
+if [[ ${KEEPDATA} == 'NO' ]]; then
+   cd ../.
+   rm -rf ${DATA}
+fi
+
 echo "<--- exnam_vrfyrad.sh.ecf"
 exit ${err}
 
