@@ -23,18 +23,11 @@
 #
 ################################################################################
 
-   export VERBOSE=${VERBOSE:-"NO"} 
    if [[ "$VERBOSE" = "YES" ]]
    then
       echo start exgdas_vrfyconv.sh.sms
       set -x
    fi
-
-   export RUN_ENVIR=${RUN_ENVIR:-nco}
-   export NET=${NET:-gfs}
-   export RUN=${RUN:-gdas}
-   export envir=${envir:-prod}
-   export component=${component:-atmos}
 
    #  Command line arguments
    export PDY=${1:-${PDY:?}} 
@@ -87,25 +80,16 @@
    export convinfo=${convinfo:-${FIXgdas}/global_convinfo.txt}	
    export conmon_base=${conmon_base:-${HOMEgdas_conmon}/fix/gdas_conmon_base.txt}
 
-   echo "cnvstat = $cnvstat"
-   echo "pgrbf00 = $pgrbf00"
-   echo "pgrbf06 = $pgrbf06"
+   echo "cnvstat = ${cnvstat}"
+   echo "pgrbf00 = ${pgrbf00}"
+   echo "pgrbf06 = ${pgrbf06}"
 
 
    #  Other variables
    export NCP=${NCP:-/bin/cp -f}
    export NDATE=${NDATE:-/nwprod/util/exec/ndate}
    export PDATE=${PDY}${CYC}
-
-   #####################################################################
-   # Preprocessing
-   $INISCRIPT
-
-   if [[ ! -d ${C_DATA} ]]; then
-      mkdir $C_DATA
-   fi
-   cd $C_DATA
-   export workdir=$C_DATA
+   export workdir=${C_DATA}
 
    #--------------------------------------------------------
    #  Ensure necessary TANKDIR directories are in place
@@ -139,13 +123,13 @@
 
    if [[ "$VERBOSE" = "YES" ]]; then
       if [[ -s ${cnvstat} ]]; then
-         echo "$cnvstat is available"
+         echo "${cnvstat} is available"
       fi
       if [[ -s ${pgrbf00} ]]; then
-         echo "$pgrbf00 is available"
+         echo "${pgrbf00} is available"
       fi
       if [[ -s ${pgrbf06} ]]; then
-         echo "$pgrbf06 is available"
+         echo "${pgrbf06} is available"
       fi
    fi
    #####################################################################
@@ -160,12 +144,12 @@
       #------------------------------------------------------------------
 
       export grib2=${grib2:-1}   
-      $NCP $cnvstat ./cnvstat.$PDATE
-      $NCP $pgrbf00 ./pgbanl.$PDATE
-      $NCP $pgrbf06 ./pgbf06.$GDATE
+      ${NCP} ${cnvstat} ./cnvstat.${PDATE}
+      ${NCP} ${pgrbf00} ./pgbanl.${PDATE}
+      ${NCP} ${pgrbf06} ./pgbf06.${GDATE}
 
-      tar -xvf ./cnvstat.$PDATE
-      #rm cnvstat.$PDATE
+      tar -xvf ./cnvstat.${PDATE}
+      rm cnvstat.${PDATE}
    
       netcdf=0
       count=`ls diag* | grep ".nc4" | wc -l`
@@ -197,8 +181,7 @@
       #         be created in the plot process and don't need to be 
       #         stored.
       #------------------------------------------------------------------
-      echo "grib2 = $grib2"
-      if [[ $grib2 -eq 0 ]]; then
+      if [[ ${grib2} -eq 0 ]]; then
 
          ${WGRIB} -s pgbanl.${PDATE} | awk '(/:RH:/ && /mb:/) || (/:RH:/ && /:2 m/) || (/:PRES:sfc/) || (/:UGRD:/ && /mb:/) || (/:VGRD:/ && /mb:/) || (/:TMP:/ && /mb:/)' | ${WGRIB} -i -grib pgbanl.${PDATE} -o ./pared_anal.${PDATE}
 
@@ -227,14 +210,14 @@
       #
       ${USHconmon}/time_vert.sh 
       rc_time_vert=$?
-      echo "rc_time_vert = $rc_time_vert"
+      echo "rc_time_vert = ${rc_time_vert}"
 
       #---------------------------------------
       #  run the horz-hist extraction script
       #
       ${USHconmon}/horz_hist.sh
       rc_horz_hist=$?
-      echo "rc_horz_hist = $rc_horz_hist"
+      echo "rc_horz_hist = ${rc_horz_hist}"
 
       #--------------------------------------
       #  optionally run clean_tankdir script
@@ -242,7 +225,7 @@
       if [[ ${CLEAN_TANKDIR} -eq 1 ]]; then
          ${USHconmon}/clean_tankdir.sh
          rc_clean_tankdir=$?
-         echo "rc_clean_tankdir = $rc_clean_tankdir"
+         echo "rc_clean_tankdir = ${rc_clean_tankdir}"
       fi
    fi
 
@@ -253,19 +236,23 @@
    if [[ ${data_available} -ne 1 ]]; then
       err=1
    elif [[ $rc_horz_hist -ne 0 ]]; then
-      echo "ERROR repored from horz_hist.sh:  $rc_horz_hist"
-      err=$rc_horz_hist
+      echo "ERROR repored from horz_hist.sh:  ${rc_horz_hist}"
+      err=${rc_horz_hist}
    elif [[ $rc_time_vert -ne 0 ]]; then
-      echo "ERROR repored from time_vert.sh:  $rc_time_vert"
-      err=$rc_time_vert
+      echo "ERROR repored from time_vert.sh:  ${rc_time_vert}"
+      err=${rc_time_vert}
+   fi
+
+   echo; echo "end exgdas_conmon.sh.sms, exit value = ${err}"; echo
+
+   if [[ ${KEEPDATA} = "NO" ]]; then
+      cd ${workdir}/..
+      rm -rf ${workdir}
    fi
 
    if [[ "$VERBOSE" = "YES" ]]; then
-      echo "end exgdas_conmon.sh.sms, exit value = ${err}"
+      set +x
    fi
-
-
-   set +x
 
 exit ${err}
 

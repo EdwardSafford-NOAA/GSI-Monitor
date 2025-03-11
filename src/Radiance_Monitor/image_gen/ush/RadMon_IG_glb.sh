@@ -350,9 +350,16 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
       echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
       chmod 755 $cmdfile
 
-      run_time="$rhr$cmin"	# HHMM format for qsub
-      $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${transfer_err} \
-           -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} -a ${run_time} ${cmdfile}
+      if [[ ${MY_MACHINE} = "hera" ]]; then
+         ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=500M --time=45:00 -J ${jobname} \
+	        --partition service -o ${transfer_log} --begin=${rhr}:${cmin} ${IG_SCRIPTS}/transfer.sh
+
+      elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+         run_time="$rhr$cmin"	# HHMM format for qsub
+	 $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${transfer_err} \
+	      -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} -a ${run_time} ${cmdfile}
+      fi
+
 
    fi
 fi

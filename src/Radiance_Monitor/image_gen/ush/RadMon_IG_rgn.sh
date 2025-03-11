@@ -131,7 +131,7 @@ fi
 last_plot_time=${TANKimg}/last_plot_time
 echo last_plot_time = $last_plot_time
 
-latest_data=`${MON_USH}/rgn_find_cycle.pl --cyc 1 --dir ${TANKverf}`
+latest_data=`${MON_USH}/rgn_find_cycle.pl --dir ${TANKverf} --mon radmon`
 
 if [[ ${pdate} = "" ]]; then
    if [[ -e ${last_plot_time} ]]; then
@@ -262,9 +262,8 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
 
          transfer_queue=dev_transfer
          jobname=transfer_${RADMON_SUFFIX}
-         job="${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}"
 
-         export WEBDIR=${WEBDIR}/regional/${RADMON_SUFFIX}/pngs
+         export WEBDIR=${WEBDIR}/regional/${RADMON_SUFFIX}
 
          cmdfile="${PLOT_WORK_DIR}/transfer_cmd"
          echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile

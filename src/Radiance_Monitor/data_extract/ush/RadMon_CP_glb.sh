@@ -198,8 +198,12 @@ if [[  -d ${DATA_LOCATION} ]]; then
       # Method 2 does _NOT_ work on wcoss2 for whatever reason.  
       #---------------------------------------------------------------------
       $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/CP.${PDY}.${CYC}.err \
-	   -v RADMON_SUFFIX=${RADMON_SUFFIX},RUN=${RUN},PDY=${PDY},CYC=${CYC},HOMEradmon=${HOMEradmon},RADSTAT_LOCATION=${RADSTAT_LOCATION},DATA_LOCATION=${DATA_LOCATION},TANKverf=${TANKverf},FIXgdas=${FIXgdas},DO_DATA_RPT=${DO_DATA_RPT},DE_EXEC=${DE_EXEC},DE_SCRIPTS=${DE_SCRIPTS},NCP="${NCP}",CLEAN_TANKVERF=${CLEAN_TANKVERF},RAD_AREA=${RAD_AREA} \
-	   -l place=shared,select=1:ncpus=1:mem=5000M -l walltime=00:20:00 -N ${jobname} ${job}
+           -v "RADMON_SUFFIX=${RADMON_SUFFIX}, PDATE=${PDATE}, RUN=${RUN}, DATA_LOCATION=${DATA_LOCATION}, \
+              NDATE=${NDATE}, TANKverf=${TANKverf}, PDY=${PDY}, CYC=${CYC}, FIXgdas=${FIXgdas}, Z=${Z}, \
+              DO_DATA_RPT=${DO_DATA_RPT}, NCP=${NCP}, DE_EXEC=${DE_EXEC}, DE_SCRIPTS=${DE_SCRIPTS}, \
+              CLEAN_TANKVERF=${CLEAN_TANKVERF}, HOMEradmon=${HOMEradmon}, RAD_AREA=${RAD_AREA}, \
+              RADSTAT_LOCATION=${RADSTAT_LOCATION}, COMPRESS=${COMPRESS}, UNCOMPRESS=${UNCOMPRESS}" \
+	   -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
    fi
 else
    echo "Unable to locate DATA_LOCATION: ${DATA_LOCATION}"

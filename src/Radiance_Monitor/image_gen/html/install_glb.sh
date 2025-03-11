@@ -10,19 +10,20 @@
 #--------------------------------------------------------------------
 #--------------------------------------------------------------------
 
-echo "BEGIN install_glb.sh"
-echo ""
-echo ""
+echo "BEGIN install_glb.sh"; echo; echo
 
 do_cmp=0
-cmp_src=""
+cmp_src_default="GDAS"
+cmp_src=${cmp_src_default}
+comp_source_value="gdas"
+comp_source_name="Operational GDAS"
 
 
 #--------------------------------------------------------------
 #  Allow user to enable comparison plots 
 #
 echo "Do you wish to enable data plots to include comparison to"
-echo " operational GDAS data, or another data source?"
+echo " operational ${cmp_src} data, or another data source?"
 echo ""
 echo -n "  Enter YES to enable comparison plots, any other input to disable.  > "
 read text
@@ -30,12 +31,11 @@ short=`echo $text | cut -c1`
 
 if [[ $short = "Y" || $short = "y" ]]; then
    do_cmp=1
-   cmp_src="GDAS"
 
    echo "Please specify the suffix of your comparison data source,"
-   echo "  or just hit the return key to use the operational GDAS as "
+   echo "  or just hit the return key to use the operational ${cmp_src} as "
    echo "  the comparison source"
-   echo ""
+   echo 
    echo -n " > "
    read text
 
@@ -74,11 +74,12 @@ cd $workdir
 #  backwards.  If not found stop after 5 days and exit.
 #
 
-RUN=gdas
+if [[ $RUN == "" ]]; then
+   RUN=gdas
+fi
 
 PDATE=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
          --run ${RUN} --mon radmon --tank ${R_TANKDIR}`
-echo PDATE=$PDATE
 
 limit=`$NDATE -120 $PDATE`		#  5 days
 
@@ -88,16 +89,12 @@ limit=`$NDATE -120 $PDATE`		#  5 days
 
 data_found=0
 while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
-   PDY=`echo $PDATE|cut -c1-8`
-   CYC=`echo $PDATE|cut -c9-10`
-
+ 
    ieee_src=`${MON_USH}/get_stats_path.sh --run $RUN --pdate ${PDATE} \
                       --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
-   echo "ieee_src = $ieee_src"
 
    if [[ -d ${ieee_src} ]]; then
       using_tar=0
-      echo " ieee_src is GO "
 
       if [[ -e ${ieee_src}/radmon_angle.tar || -e ${ieee_src}/radmon_angle.tar.gz ]]; then
          if [[ -e ${ieee_src}/radmon_angle.tar.gz ]]; then
@@ -116,7 +113,7 @@ while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
 	 fi
       fi
    else
-      echo "ieee_src is NOGO"
+      echo "ieee_src ${ieee_src} is NOGO"
    fi
 
    if [[ data_found -eq 0 ]]; then
@@ -125,8 +122,8 @@ while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
 done
 
 if [[ $data_found -eq 0 ]]; then
-   echo Unable to locate any data files in the past 5 days for $SUFFIX 
-   echo in $TANKverf/angle.
+   echo Unable to locate any data files in the 5 days from ${PDATE}
+   echo for ${SUFFIX} in ${TANKverf}/angle.
    exit
 fi
 
@@ -150,15 +147,14 @@ for test in ${test_list}; do
       tmp=`echo "$this_file" | cut -d. -f2`
    fi 
 
-   SATYPE_LIST="$SATYPE_LIST $tmp"
+   satypes="${satypes} ${tmp}"
 done
 
-export SATYPE=$SATYPE_LIST
-
-if [[ ${#SATYPE} -le 0 ]]; then  
+if [[ ${#satypes} -le 0 ]]; then  
   echo "SATYPE list is zero length, unable to complete html installation"
   exit 
 fi
+export SATYPE=${satypes}
 
 
 #--------------------------------------------------------------
@@ -168,8 +164,6 @@ UNSORTED_LIST=./unsorted.txt
 >$UNSORTED_LIST
 export SORTED_LIST=./sorted.txt
 >$SORTED_LIST
-
-echo "SATYPE = $SATYPE"
 
 for satype in $SATYPE; do
    ins=${satype%_*}
@@ -221,7 +215,6 @@ done
 #  Sort the list by Satellite 
 #
 `sort -d -u $UNSORTED_LIST > $SORTED_LIST`
-echo SORTED_LIST = $SORTED_LIST
 
 #--------------------------------------------------------------
 #  Read the sorted list and create the platform table
@@ -250,7 +243,6 @@ while read line; do
    echo $hline >> $PLATFORM_TBL
 done < "$SORTED_LIST"
 
-
 #--------------------------------------------------------------
 #  Edit the html files to add the platform table to each.
 #
@@ -258,8 +250,8 @@ mod_html_files="plot_summary.html plot_time.html plot_angle.html plot_bcoef.html
 
 for html_file in $mod_html_files; do
    echo "processing ${html_file}"
-   $NCP ${RADMON_IMAGE_GEN}/html/${html_file} .
-   
+   ${NCP} ${RADMON_IMAGE_GEN}/html/${html_file}.glb ${html_file}
+
    tmp_html=./tmp_${html_file}
    rm -f ${tmp_html}
 
@@ -272,7 +264,7 @@ for html_file in $mod_html_files; do
    #  copy the $file from 'END_TABLE_INSERT' comment to end
    sed -n '/END_TABLE_INSERT/,$p' ${html_file} >> ${tmp_html}
 
-   rm $html_file
+   rm ${html_file}
 
    #  switch all 'INSERT_SUFFIX' tags to the actual suffix
    #  and route output to $html_file and we're done.
@@ -289,25 +281,26 @@ if [[ $do_cmp == 1 ]]; then
    comp_html_files="plot_summary.html plot_time.html"
 
    #-------------------------------------------------------------------------
-   #  If cmp_src == GDAS we only have to uncomment the comparison check box
+   #  If cmp_src == $cmp_src_default we only have to uncomment the comparison check box
    #  in the html files.  If it's another source then we'll have to change
    #  the values of compSrc, compName, and compHome in the html files.
    #
 
    for html_file in $comp_html_files; do
-      echo "processing ${html_file}"
 
       tmp_html=./tmp_${html_file}
       rm -f ${tmp_html}
 
       #----------------------------------------------------------------------------
       # remove the OPTIONAL_COMPARE lines which uncomments the comparison check box
+      #
       sed '/OPTIONAL_COMPARE/d' ./${html_file} > ${tmp_html}
       mv -f ${tmp_html} ${html_file}
 
       #---------------------------------------------------------------
-      # if we're using a source other than GDAS make that change here
-      if [[ $cmp_src != "GDAS" ]]; then
+      # if we're using a source other than $cmp_src_default that change here
+      #
+      if [[ $cmp_src != ${cmp_src_default} ]]; then
          cmp_sc_line="            var compSrc  = \"${cmp_src}\";"
          cmp_nm_line="            var compName = \"${cmp_src}\";"
          cmp_hm_line="            var compHome = \"../${cmp_src}/\";"
@@ -315,7 +308,14 @@ if [[ $do_cmp == 1 ]]; then
          sed -i "/var compSrc /c ${cmp_sc_line}" ${html_file}
          sed -i "/var compName /c ${cmp_nm_line}" ${html_file}
          sed -i "/var compHome /c ${cmp_hm_line}" ${html_file}
+
+	 comp_source_value="${cmp_src}"
+         comp_source_name="Experimental $cmp_src"
+
       fi
+      
+      sed -i "s/COMP_SOURCE_VALUE/${comp_source_value}/" ${html_file}
+      sed -i "s/COMP_SOURCE_NAME/${comp_source_name}/" ${html_file}
 
    done
 fi
@@ -331,13 +331,13 @@ rm mk_intro.sh
 
 #--------------------------------------------------------------
 #  Copy the index.html file and change INSERT_SUFFIX to actual suffix.
-index_file="index.html.$RAD_AREA"
+index_file="index.html.glb"
 tmp_index="tmp.index.html"
 new_index="index.html"
 
 $NCP ${RADMON_IMAGE_GEN}/html/${index_file} .
 sed s/INSERT_SUFFIX/${SUFFIX}/g $index_file > ${tmp_index}
-if [[ $SUFFIX == "GFS" || $SUFFIX == "nrx" ]]; then
+if [[ $SUFFIX == ${cmp_src_default} ]]; then
    sed s/Experimental/Operational/1 ${tmp_index} > ${new_index}
 fi
 
@@ -350,8 +350,6 @@ if [[ ! -s ${new_index} ]]; then
 fi
 
 rm ./${index_file}
-
-echo workdir = $workdir
 
 #--------------------------------------------------------------
 #  Make starting directory in $imgndir and copy over html, 
@@ -394,6 +392,11 @@ for file in $arrow_files; do
    $NCP ${RADMON_IMAGE_GEN}/html/${file} ${imgndir}/pngs/.
 done
 
+#---------------------------
+#  transfer files to server
+#
+${RADMON_IMAGE_GEN}/html/transfer_html.sh
+
 #------------------------
 # clean up $workdir
 #
@@ -401,7 +404,6 @@ cd $workdir
 cd ../
 rm -rf $workdir
 
-echo ""
-echo "END install_glb.sh"
+echo; echo "END install_glb.sh"
 
 exit

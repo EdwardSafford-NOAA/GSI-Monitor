@@ -3,32 +3,30 @@
 #############################################################
 # Set up environment for GDAS Conventional Monitor job
 ########################################
-set -xa
+
 #
 # Specify whether the run is production or development
 #
-export RUN_ENVIR=${RUN_ENVIR:-prod}
 export envir=${envir:-prod}
 
-
 echo `date` $0 `date -u` begin
-export PS4='$SECONDS + '
+
 
 ########################################################### 
 # set up working directory space
 ###########################################################
 export CONMON_WORK_DIR=${CONMON_WORK_DIR:-/tmpnwprd}
 export C_DATAROOT=${C_DATAROOT:-${CONMON_WORK_DIR}}
-export C_DATA=${C_DATA:-${C_DATAROOT}/${jobid}}
-mkdir -p $C_DATA
-cd $C_DATA
 
+job=${job:-gdas_atmos_conmon}
+pid=${pid:-$$}
+export C_DATA=${C_DATA:-${C_DATAROOT}/${job}.${pid}}
 
-####################################
-# Determine Job Output Name on System
-####################################
-export outid="LL$job"
-export cycle=t${CYC}z 
+if [[ -e ${C_DATA} ]]; then
+   rm -rf ${C_DATA}
+fi
+mkdir -p ${C_DATA}
+cd ${C_DATA}
 
 ###############################
 # Specify NET and RUN name
@@ -37,14 +35,7 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export component=${component:-atmos}
 
-##################################################
-# SENDCOM  - Copy Files From TMPDIR to $COMOUT
-# SENDDBN  - Issue DBNet Client Calls
-##################################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-NO}
-export VERBOSE=${VERBOSE:-YES}
-
+export VERBOSE=${VERBOSE:-NO}
 export HOMEgfs_conmon=${HOMEgfs_conmon:-${NWROOT}/gfs.${gfs_ver}}
 
 export FIXgdas=${FIXgdas:-${HOMEgfs_conmon}/fix}
@@ -63,15 +54,6 @@ export Z=${Z:-gz}
 
 export CLEAN_TANKDIR=${CLEAN_TANKDIR:-0}
 
-###################################
-# Set up the UTILITIES
-###################################
-export NWPROD=${NWPROD:-/nwprod}
-
-export utilscript=${utilscript:-$UTILROOT/ush}
-export utilexec=${utilexec:-$UTILROOT/exec}
-export NDATE=${NDATE:-$utilexec/ndate}
-
 
 ##############################################################
 # COMIN    - WHERE GSI OUTPUT (which is input data) RESIDES
@@ -89,25 +71,13 @@ export PDY_m6h=`echo $m6h_date|cut -c1-8`
 
 export C_COMIN_m6h=${C_COMIN_m6h:-$C_COM_IN/${RUN}.${PDY_m6h}}
 
-env
-
 export CONMON_AREA=${CONMON_AREA:-glb}
-
+export KEEPDATA=${KEEPDATA:-YES}
 
 ########################################################
 # Execute the script.
 ${CONMONSH:-$HOMEgdas_conmon/scripts/exgdas_atmos_conmon.sh} ${PDY} ${CYC}
 ########################################################
-
-
-################################
-# Remove the Working Directory
-################################
-KEEPDATA=${KEEPDATA:-YES}
-cd $C_DATAROOT
-if [ ${KEEPDATA} = NO ] ; then
-  rm -rf $C_DATA
-fi
 
 date
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -xa
 
 #----------------------------------------------------
@@ -14,7 +14,7 @@ echo "--> time_vert.sh"
    echo " $CWD"
 
    rc=0
-   export nregion=10
+   nregion=10
 
    echo "CONMON_NETCDF = ${CONMON_NETCDF}"
    netcdf=".false."
@@ -24,16 +24,13 @@ echo "--> time_vert.sh"
    fi
    echo "netcdf = $netcdf"
 
-
    #------------------------------------------
    # set up TANKDIR (output) sub-directories
    #
    echo TANKDIR_conmon = $TANKDIR_conmon
-   export savedir=$TANKDIR_conmon/time_vert
+   savedir=$TANKDIR_conmon/time_vert
    mkdir -p ${savedir}
 
-
-   echo "convinfo = $convinfo"			# defined in calling script
    cp ${convinfo} ./convinfo
 
    export execfile=${EXECconmon}/conmon_time.x
@@ -49,11 +46,11 @@ echo "--> time_vert.sh"
    if [ $CONMON_NETCDF -eq 0 ]; then
 
       for run in ges anl; do
+  
+	 if [[ -e ./diag_conv_${run}.${PDATE}.gz ]]; then 
+            ${UNCOMPRESS} ./diag_conv_${run}.${PDATE}.gz
+         fi
 
-         echo " cycle = $cycle "
-   
-         ${UNCOMPRESS} ./diag_conv_${run}.${PDATE}.${Z}
- 
          cat << EOF > input
 &input
          input_file=diag_conv_${run}.${PDATE},
@@ -166,7 +163,6 @@ EOF
       mv -f stdout.tar.${Z} ${savedir}/.
 
    fi         
-
 
 
    echo "<-- time_vert.sh"

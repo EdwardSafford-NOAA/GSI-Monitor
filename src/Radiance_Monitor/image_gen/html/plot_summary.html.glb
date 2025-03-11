@@ -1049,10 +1049,6 @@
         <form id="satSelectForm" action="" style="position:absolute; left:2px;top:40px">
             <b>Platform:</b>
             <select id="platformSelect" onChange="platSelect(this.value)">
-                <!-- This menu will need to be customized by Install_html.sh on wcoss
-                     It could be loaded using a php file, but that risks a condition where
-                     a source might be missing for some reason, and we should know about that
-                     if it was to happen, so it's better that a data load would fail here.  -->
                 <!-- INSERT_TABLE -->
 <OPTION value="airs_aqua" id="airs_aqua"> AQUA AIRS </OPTION>
 <OPTION value="amsua_aqua" id="amsua_aqua"> AQUA AMSU-A </OPTION>
@@ -1094,7 +1090,7 @@
                 <table style="position:absolute;left:1px;top:80px;width:150px" id="compareTable">
                     <caption style="test-indent:2em"> <b>Compare With:</b> </caption>
                     <tr><td>
-                        <input type="checkbox" id="ckboxCmp" name="ckboxCmp" value="gfs" onclick="boxCheck(this.value)"><label id="ckboxCompLbl" for="ckboxCmp">operational GDAS</label></input>
+			<input type="checkbox" id="ckboxCmp" name="ckboxCmp" value="COMP_SOURCE_VALUE" onclick="boxCheck(this.value)"> <label for="ckboxCmp">COMP_SOURCE_NAME</label></input>
                     </td></tr>
                 </table>
      RM line to install OPTIONAL_COMPARE  -->
@@ -1172,4 +1168,14 @@
         </table>
 
     </BODY>
+
+    <footer>
+        <P style="background-color: lightblue;"><u><b>Disclaimer:</b></u> These are not official
+ 	          NWS products and should not to be relied upon for operational purposes. This web
+                  site is not subject to 24/7 support, and thus may be unavailable during system
+		  outages. For more information please see this
+		  <a href="https://www.weather.gov/disclaimer.php">Disclaimer</a>
+        </P>
+    </footer>
+
 </HTML>

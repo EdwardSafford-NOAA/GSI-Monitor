@@ -1340,10 +1340,6 @@
 <form id="satSelectForm" action="" style="position:absolute; left:2px;top:40px">
     <b>Platform:</b>
     <select id="platformSelect" onChange="platSelect(this.value)">
-        <!-- This menu will need to be customized by Install_html.sh on wcoss
-             It could be loaded using a php file, but that risks a condition where
-             a source might be missing for some reason, and we should know about that
-             if it was to happen, so it's better that a data load would fail here.  -->
         <!-- INSERT_TABLE -->
 <OPTION value="airs_aqua" id="airs_aqua"> AQUA AIRS </OPTION>
 <OPTION value="amsua_aqua" id="amsua_aqua"> AQUA AMSU-A </OPTION>
@@ -1502,4 +1498,14 @@
 
 
 </body>
+
+<footer>
+    <P style="background-color: lightblue;"><u><b>Disclaimer:</b></u> These are not official 
+             NWS products and should not to be relied upon for operational purposes. This web 
+             site is not subject to 24/7 support, and thus may be unavailable during system 
+             outages. For more information please see this
+             <a href="https://www.weather.gov/disclaimer.php">Disclaimer</a>
+    </P>
+</footer>
+
 </html>

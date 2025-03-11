@@ -34,10 +34,10 @@
 
 
 
-   export nreal_ps=${nreal_ps:-17}
-   export nreal_q=${nreal_q:-18}
-   export nreal_t=${nreal_t:-22}
-   export nreal_uv=${nreal_uv:-21}
+   export nreal_ps=${nreal_ps:-18} 
+   export nreal_q=${nreal_q:-19} 
+   export nreal_t=${nreal_t:-18} 
+   export nreal_uv=${nreal_uv:-23}
 
 
    #------------------------------
@@ -56,8 +56,9 @@
       rm -f ${errfile}
    fi
 
-   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || \
-         $MY_MACHINE == "jet" || $MY_MACHINE == "orion" ]]; then
+   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || 
+         $MY_MACHINE == "jet" || $MY_MACHINE == "orion" || 
+         $MY_MACHINE == "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_hist}
 
@@ -83,8 +84,9 @@
       rm -f ${errfile}
    fi
 
-   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || \
-         $MY_MACHINE == "jet" || $MY_MACHINE == "orion" ]]; then
+   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" ||
+         $MY_MACHINE == "jet" || $MY_MACHINE == "orion" ||
+         $MY_MACHINE == "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz}
 
@@ -111,7 +113,8 @@
    fi
 
    if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
-         ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ]]; then
+         ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ||
+         ${MY_MACHINE} == "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 \
 	     -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz_uv}
 

@@ -1,0 +1,413 @@
+#!/bin/bash
+
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+#  install_rgn.sh
+#
+#  Build the html files necessary for a radiance monitor web site 
+#  and store it in the plot location (~/nbns/imgn/$RADMON_SUFFIX).
+#--------------------------------------------------------------------
+#--------------------------------------------------------------------
+
+echo "BEGIN install_rgn.sh"
+echo ""
+
+do_cmp=0
+cmp_src_default="NAM"
+cmp_src=${cmp_src_default}
+comp_source_value="nam"
+comp_source_name="Operational NAM"
+
+
+#--------------------------------------------------------------
+#  Allow user to enable comparison plots 
+#
+echo "Do you wish to enable data plots to include comparison to"
+echo " operational ${cmp_src} data, or another regional data source?"
+echo ""
+echo -n "  Enter YES to enable comparison plots, any other input to disable.  > "
+read text
+short=`echo $text | cut -c1`
+
+if [[ $short = "Y" || $short = "y" ]]; then
+   do_cmp=1
+
+   echo "Please specify the suffix of your comparison data source,"
+   echo "  or just hit the return key to use the operational ${cmp_src} as "
+   echo "  the comparison source"
+   echo ""
+   echo -n " > "
+   read text
+
+   if [[ ${#text} -gt 0 ]]; then
+     cmp_src=${text}
+   fi
+
+   echo "${cmp_src} will be used as the comparison source."
+fi
+
+#--------------------------------------------------------------
+#  Create a temporary working directory.
+#
+workdir=$MON_STMP/${RADMON_SUFFIX}_html
+if [[ -e $workdir ]]; then
+   rm -rf $workdir
+fi
+mkdir $workdir
+cd $workdir
+
+
+#-------------------------------------------------------------
+#  Assemble the SATYPE list from available data files in 
+#  $TANKverf using angle.* files.
+#
+#  Find the first date with data.  Start at today and work
+#  backwards.  If not found stop after 5 days and exit.
+#
+
+PDATE=`${MON_USH}/rgn_find_cycle.pl --dir ${TANKverf} --mon radmon`
+echo PDATE=$PDATE
+
+limit=`$NDATE -6 $PDATE`		#  6 cycles
+
+#-----------------------------------------------------------
+#  Build test_list which will contain all data files for
+#  one cycle in $PDATE. We start with $PDATE and back up
+#  for 6 hours.  This intentionally introduces duplicates
+#  but catches any sat/instrument sources that didn't have
+#  any data for a given cycle.
+#
+tankdir="${R_TANKDIR}/${RADMON_SUFFIX}"
+data_found=0
+test_list=""
+
+while [[ $PDATE -ge $limit ]]; do
+   pdy=`echo $PDATE|cut -c1-8`
+
+   pdy=`echo ${PDATE}|cut -c1-8`
+   ieee_src=${tankdir}/radmon.${pdy}
+
+   if [[ -d ${ieee_src} ]]; then
+      using_tar=0
+
+      if [[ -e ${ieee_src}/radmon_angle.tar || -e ${ieee_src}/radmon_angle.tar.gz ]]; then
+         if [[ -e ${ieee_src}/radmon_angle.tar.gz ]]; then
+            found=`tar -tf ${ieee_src}/radmon_angle.tar.gz`
+         else
+            found=`tar -tf ${ieee_src}/radmon_angle.tar`
+         fi 
+
+	 data_found=1 
+
+      else
+         test=`ls ${ieee_src}/angle.*${PDATE}*.ieee_d* | wc -l`
+         if [[ $test -gt 0 ]]; then
+            found=`ls ${ieee_src}/angle.*${PDATE}*.ieee_d*`
+            data_found=1
+	 fi
+      fi
+      test_list="${test_list} ${found}"
+   else
+      echo "ieee_src is NOGO, skipping $PDATE"
+   fi
+
+   PDATE=`$NDATE -1 $PDATE`
+
+done
+
+if [[ $data_found -eq 0 ]]; then
+   echo Unable to locate any data files in the past 5 days for ${RADMON_SUFFIX}
+   echo in ${TANKverf}/angle.
+   exit
+fi
+
+#-----------------------------------------------------------
+#  Screen out all non-angle, analysis (*_anl*) and control 
+#  (*.ctl) files from $test_list. Reduce file names to just 
+#  'instrument_sat'.
+# 
+for test in ${test_list}; do
+   this_file=`basename $test`
+
+   test_anl=`echo $this_file | grep "_anl"`
+   test_ctl=`echo $this_file | grep "ctl"`
+   if [[ $test_anl != "" || $test_ctl != "" ]]; then
+      continue
+   fi
+
+   tmp=`echo "$this_file" | cut -d. -f1`
+   if [[ $tmp == "angle" ]]; then
+      tmp=`echo "$this_file" | cut -d. -f2`
+   fi 
+   
+   satype_list="${satype_list} ${tmp}"
+done
+
+# Eliminate duplicates and sort $satype_list
+array=(${satype_list})
+export SATYPE=$(printf "%s\n" "${array[@]}" | sort | uniq)
+
+echo SATYPE: $SATYPE
+
+if [[ ${#SATYPE} -le 0 ]]; then  
+  echo "SATYPE list is zero length, unable to complete html installation"
+  exit 
+fi
+
+#--------------------------------------------------------------
+#  Use the SATYPE list to construct the platform table.
+#
+UNSORTED_LIST=./unsorted.txt
+>${UNSORTED_LIST}
+export SORTED_LIST=./sorted.txt
+>${SORTED_LIST}
+
+for satype in ${SATYPE}; do
+   ins=${satype%_*}
+   tmp="${ins}_"
+   sat=${satype#${tmp}} 
+
+   sat_num=`echo ${sat} | tr -d '[[:alpha:]]'`	
+
+   #-----------------------------------------------------------------
+   # If sat_num has a length > 0 then we have a goes or noaa series
+   # satellite.  Otherwise, convert sat to upper case and stop there.
+   #
+   if [[ ${#sat_num} -gt 0 ]]; then
+      char=`expr substr ${sat} 1 1`
+      if [[ $char == "g" ]]; then
+         sat="GOES-${sat_num}"
+      elif [[ $char == "n" ]]; then
+         sat="NOAA-${sat_num}"
+
+      else
+         sat=`echo ${sat} | tr 'a-z' 'A-Z'`
+      fi
+   else
+      sat=`echo ${sat} | tr 'a-z' 'A-Z'`
+   fi
+
+   #-----------------------------------------------------------------
+   #  Certain instruments require specific formatting.
+   #
+   amsu_test=`expr match ${ins} "amsu"`
+   hirs_test=`expr match ${ins} "hirs"`
+   ins_num=`echo ${ins} | tr -d '[[:alpha:]]'`	
+
+   if [[ $amsu_test -gt 0 ]]; then
+      char=`expr substr ${ins} 5 5`
+      char=`echo ${char} | tr -s 'a-z' 'A-Z'`
+      ins="AMSU-${char}"
+   elif [[ $hirs_test -gt 0 ]]; then
+      ins="HIRS/${ins_num}"
+   else
+      ins=`echo ${ins} | tr -s 'a-z' 'A-Z'`
+   fi
+
+   echo ${sat} ${ins} ${satype} >> ${UNSORTED_LIST}
+
+done
+
+echo UNSORTED_LIST: ${UNSORTED_LIST}
+
+#--------------------------------------------------------------
+#  Sort the list by Satellite 
+#
+`sort -d -u ${UNSORTED_LIST} > ${SORTED_LIST}`
+export SORTED_LIST=${SORTED_LIST}
+
+#--------------------------------------------------------------
+#  Read the sorted list and create the platform table
+#
+PLATFORM_TBL=./platform.txt
+> ${PLATFORM_TBL}
+
+quote='"'
+id='  id="'
+extra='">'
+end_option='</OPTION>'
+
+while read line; do
+   sat=`echo ${line} | gawk '{print $1}'`
+   ins=`echo ${line} | gawk '{print $2}'`
+   satype=`echo ${line} | gawk '{print $3}'`
+
+   hline='<OPTION value="'
+   hline=${hline}${satype}
+
+   hline=${hline}${quote}${id}${satype}${extra}
+   hline="${hline} ${sat} ${ins} ${end_option}"
+
+   echo ${hline} >> ${PLATFORM_TBL}
+done < "${SORTED_LIST}"
+
+
+#--------------------------------------------------------------
+#  Edit the html files to add the platform table to each.
+#
+mod_html_files="plot_summary.html plot_time.html plot_angle.html plot_bcoef.html"
+
+for html_file in $mod_html_files; do
+   echo "processing ${html_file}"
+   ${NCP} ${RADMON_IMAGE_GEN}/html/${html_file}.rgn ${html_file}
+
+   tmp_html=./tmp_${html_file}
+   rm -f ${tmp_html}
+
+   #  copy the $file from start to 'INSERT_TABLE' comment
+   sed -e '/INSERT_TABLE/,$d' ${html_file} > ${tmp_html}
+
+   #  add the $PLATFORM_TBL (built above)
+   `cat ${PLATFORM_TBL} >> ${tmp_html}`
+
+   #  copy the $file from 'END_TABLE_INSERT' comment to end
+   sed -n '/END_TABLE_INSERT/,$p' ${html_file} >> ${tmp_html}
+
+   rm $html_file
+
+   #  switch all 'INSERT_SUFFIX' tags to the actual suffix
+   #  and route output to ${html_file} and we're done.
+   sed s/INSERT_SUFFIX/${RADMON_SUFFIX}/g ${tmp_html} > ${html_file}
+   rm ${tmp_html}
+
+done
+
+#--------------------------------------------------------------
+#  Enable comparison plots
+#
+#  This has been intentionally commented out and left in place 
+#  for future implementation. 
+#
+
+if [[ $do_cmp == 1 ]]; then
+
+   comp_html_files="plot_summary.html plot_time.html"
+   #--------------------------------------------------------------------------
+   #  If cmp_src == $cmp_src_default we only have to uncomment the comparison
+   #  check box in the html files.  If it's another source then we'll have to
+   #  change the values of compSrc, compName, and compHome in the html files.
+   #
+
+   for html_file in $comp_html_files; do
+
+      tmp_html=./tmp_${html_file}
+      rm -f ${tmp_html}
+
+      #----------------------------------------------------------------------------
+      # remove the OPTIONAL_COMPARE lines which uncomments the comparison check box
+      sed '/OPTIONAL_COMPARE/d' ./${html_file} > ${tmp_html}
+      mv -f ${tmp_html} ${html_file}
+
+      #---------------------------------------------------------------
+      # if we're using a source other than GDAS make that change here
+      if [[ ${cmp_src} != ${cmp_src_default} ]]; then
+         cmp_sc_line="            var compSrc  = \"${cmp_src}\";"
+         cmp_nm_line="            var compName = \"${cmp_src}\";"
+         cmp_hm_line="            var compHome = \"../${cmp_src}/\";"
+
+         sed -i "/var compSrc /c ${cmp_sc_line}" ${html_file}
+         sed -i "/var compName /c ${cmp_nm_line}" ${html_file}
+         sed -i "/var compHome /c ${cmp_hm_line}" ${html_file}
+
+	 comp_source_value="${cmp_src}"
+	 comp_source_name="Experimental $cmp_src"
+      fi
+
+      echo "replacing COMP_SOURCE_VALUE"
+      sed -i "s/COMP_SOURCE_VALUE/${comp_source_value}/" ${html_file}
+      sed -i "s/COMP_SOURCE_NAME/${comp_source_name}/" ${html_file}
+
+   done
+fi
+
+#--------------------------------------------------------------
+# Generate the intro.html file.
+#
+${NCP} ${RADMON_IMAGE_GEN}/html/mk_intro.sh .
+${NCP} ${RADMON_IMAGE_GEN}/html/intro.html  intro.html.stock 
+
+./mk_intro.sh 
+rm mk_intro.sh
+
+#--------------------------------------------------------------
+#  Copy the index.html file and change INSERT_SUFFIX to actual suffix.
+index_file="index.html.rgn"
+tmp_index="tmp.index.html"
+new_index="index.html"
+
+$NCP ${RADMON_IMAGE_GEN}/html/${index_file} .
+sed s/INSERT_SUFFIX/${RADMON_SUFFIX}/g $index_file > ${tmp_index}
+if [[ $RADMON_SUFFIX == "GFS" || $RADMON_SUFFIX == "nam" ]]; then
+   sed s/Experimental/Operational/1 ${tmp_index} > ${new_index}
+fi
+
+if [[ ! -s ${new_index} ]]; then
+   if [[ -s ${tmp_index} ]]; then
+      $NCP ${tmp_index} ${new_index}
+   else
+      $NCP ${index_file} ${new_index}
+   fi
+fi
+
+rm ./${index_file}
+
+echo workdir = $workdir
+
+#--------------------------------------------------------------
+#  Make starting directory in $imgndir and copy over html, 
+#  misc, and thumb images.
+#
+if [[ ! -d ${IMGNDIR} ]]; then
+   mkdir -p ${IMGNDIR}
+fi
+imgndir=`dirname ${IMGNDIR}`
+
+
+#-----------------------
+#  move html files to imgndir
+#
+all_html_files="${mod_html_files} index.html intro.html"
+for file in $all_html_files; do
+   $NCP ${file} ${imgndir}/${file}
+done
+   
+#-----------------------
+#  mk image dirs 
+#
+subdirs="angle bcoef summary time"
+for dir in $subdirs; do
+   mkdir -p ${imgndir}/pngs/${dir}
+done
+
+#-----------------------
+#  js files
+#
+support_files="jsuri-1.1.1.js stats.js latest_cycle.php"
+for file in $support_files; do
+   $NCP ${RADMON_IMAGE_GEN}/html/${file} ${imgndir}/.
+done
+
+#-----------------------
+#  arrow graphics
+#
+arrow_files="arrowleft.png arrowright.png"
+for file in $arrow_files; do
+   $NCP ${RADMON_IMAGE_GEN}/html/${file} ${imgndir}/pngs/.
+done
+
+#---------------------------
+#  transfer files to server
+#
+${RADMON_IMAGE_GEN}/html/transfer_html.sh
+
+#------------------------
+# clean up $workdir
+#
+cd $workdir
+cd ../
+rm -rf $workdir
+
+echo ""
+echo "END install_rgn.sh"
+
+exit
