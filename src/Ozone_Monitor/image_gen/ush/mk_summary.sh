@@ -9,7 +9,7 @@
 #------------------------------------------------------------------
 
 echo "begin mk_summary.sh"
-
+set -x
 
 data_source="ges anl"
 
@@ -108,9 +108,14 @@ for ptype in ${data_source}; do
            --wrap "srun -l --multi-prog ${cmdfile}"
 
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
-	         
+	        
       $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logf} -e ${errf} \
-           -V -l select=1:mem=500M -l walltime=10:00 -N ${job} ${cmdfile}
+           -v "WORKDIR=${WORKDIR}, PDATE=${PDATE}, MON_USH=${MON_USH}, OZNMON_SUFFIX=${OZNMON_SUFFIX}, \
+	      NDATE=${NDATE}, UNCOMPRESS=${UNCOMPRESS}, COMPRESS=${COMPRESS}, NUM_CYCLES=${NUM_CYCLES}, \
+	      OZN_IG_SCRIPTS=${OZN_IG_SCRIPTS}, GRADS=${GRADS}, NCP=${NCP}, KEEPDATA=${KEEPDATA}, RUN=${RUN}, \
+              OZN_TANKDIR=${OZN_TANKDIR}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, OZN_IG_GSCRPTS=${OZN_IG_GSCRPTS}, \
+	      PATH=${PATH}, GADDIR=${GADDIR}, OZN_IMGS_SUMMARY=${OZN_IMGS_SUMMARY}" \
+           -l select=1:mem=500M -l walltime=10:00 -N ${job} ${cmdfile}
 
    fi
 
