@@ -160,6 +160,11 @@ if [[ -e ${logfile} ]]; then
    rm ${logfile}
 fi
 
+errfile="$R_LOGDIR/plot_bcoef.err"
+if [[ -e ${errfile} ]]; then
+   rm ${errfile}
+fi
+
 if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
    $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
         -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
@@ -173,7 +178,12 @@ elif [[ $MY_MACHINE = "jet" ]]; then
         -p ${BATCH_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e $R_LOGDIR/plot_bcoef.err -V \
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e $R_LOGDIR/plot_bcoef.err \
+        -v "RADMON_SUFFIX=${RADMON_SUFFIX}, PLOT_WORK_DIR=${PLOT_WORK_DIR}, START_DATE=${START_DATE}, PDATE=${PDATE}, \
+	   IMGNDIR=${IMGNDIR}, NCP=${NCP}, UNCOMPRESS=${UNCOMPRESS}, COMPRESS=${COMPRESS}, NUM_CYCLES=${NUM_CYCLES}, \
+           RAD_AREA=${RAD_AREA}, R_TANKDIR=${R_TANKDIR}, NDATE=${NDATE}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, \
+           PLOT_STATIC_IMGS=${PLOT_STATIC_IMGS}, GRADS=${GRADS}, PATH=${PATH}, GADDIR=${GADDIR}, IG_GSCRIPTS=${IG_GSCRIPTS}, \
+           IG_EXEC=${IG_EXEC}, SATYPE=${SATYPE}, MON_USH=${MON_USH}, RUN=${RUN}, Z=${Z}, IG_SCRIPTS=${IG_SCRIPTS}" \
         -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} $IG_SCRIPTS/plot_bcoef.sh
 fi
 

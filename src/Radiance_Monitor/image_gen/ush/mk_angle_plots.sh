@@ -27,30 +27,30 @@ allmissing=1
 
 cycdy=$((24/$CYCLE_INTERVAL))           # number cycles per day
 ndays=$(($NUM_CYCLES/$cycdy))		# number of days in plot period
-echo "ndays = $ndays"
+echo "ndays = ${ndays}"
 rm_list=""
 
 for type in ${SATYPE}; do
    found=0
-   test_day=$PDATE
+   test_day=${PDATE}
 
    if [[ ${ndays} -gt 10 ]]; then
       ctr=10
    elif [[ ${ndays} -eq 0 ]]; then 
       ctr=1
    else
-      ctr=$ndays
+      ctr=${ndays}
    fi
  
-   while [[ ${found} -eq 0 && $ctr -gt 0 ]]; do
+   while [[ ${found} -eq 0 && ${ctr} -gt 0 ]]; do
  
       #---------------------------------------------------
       #  Check to see if the *ctl* files are in $imgndir
       #
-      nctl=`ls ${imgndir} | grep $type | grep ctl`
+      nctl=`ls ${imgndir} | grep ${type} | grep ctl`
       if [[ ${#nctl} -gt 0 ]]; then
          found=1
-         echo "FOUND $type.ctl"
+         echo "FOUND ${type}.ctl"
 
       else
          #-------------------------
@@ -60,11 +60,11 @@ for type in ${SATYPE}; do
             pdy=`echo ${test_day}|cut -c1-8`
 	    ieee_src=${TANKverf}/radmon.${pdy} 
 	 else
-	    ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${test_day} \
+	    ieee_src=`$MON_USH/get_stats_path.sh --run ${RUN} --pdate ${test_day} \
 		       --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
          fi
 
-	 if [[ -d $ieee_src ]]; then
+	 if [[ -d ${ieee_src} ]]; then
             using_tar=0
             #--------------------------------------------------------------
             #  Determine if the angle files are in a tar file.  If so
@@ -92,10 +92,10 @@ for type in ${SATYPE}; do
             #  Copy the *ctl* files to $imgndir, dropping
             #  'angle' from the file name.
             #
-            ctl_files=`ls $ieee_src| grep ctl | grep angle.$type`
+            ctl_files=`ls ${ieee_src}| grep ctl | grep angle.${type}`
             prefix='angle.'
-            for file in $ctl_files; do
-               newfile=`basename $file | sed -e "s/^$prefix//"`
+            for file in ${ctl_files}; do
+               newfile=`basename ${file} | sed -e "s/^${prefix}//"`
                $NCP ${ieee_src}/${file} ${imgndir}/${newfile}
                found=1
             done
@@ -104,7 +104,7 @@ for type in ${SATYPE}; do
             #  If there's a radmon_angle.tar archive in ${ieee_src} then
             #  delete the extracted *ctl* files to leave just the tar files.
             #
-            if [[ $using_tar -eq 1 ]]; then
+            if [[ ${using_tar} -eq 1 ]]; then
                rm -f ${ieee_src}/angle.${type}.ctl*
                rm -f ${ieee_src}/angle.${type}_anl.ctl*
             fi
@@ -116,8 +116,8 @@ for type in ${SATYPE}; do
 	 #------------------------------------------
 	 #  Step to the previous day and try again.
 	 #
-         if [[ $ctr -gt 0 ]]; then
-            test_day=`$NDATE -24 ${test_day}`
+         if [[ ${ctr} -gt 0 ]]; then
+            test_day=`${NDATE} -24 ${test_day}`
             ctr=$(($ctr-1))
          fi
       fi
@@ -133,7 +133,7 @@ for type in ${SATYPE}; do
 
 done
 
-if [[ $allmissing = 1 ]]; then
+if [[ ${allmissing} = 1 ]]; then
    echo ERROR:  Unable to plot.  All angle control files are missing from ${TANKverf} for requested date range.
    exit 3
 fi
@@ -170,10 +170,10 @@ for sat in ${SATYPE}; do
    #
    nchanl=`cat ${imgndir}/${sat}.ctl | gawk '/title/{print $NF}'` 
 
-   if [[ $nchanl -lt 100 ]]; then
-      satlist=" $sat $satlist "
+   if [[ ${nchanl} -lt 100 ]]; then
+      satlist=" ${sat} ${satlist} "
    else
-      big_satlist=" $sat $big_satlist "
+      big_satlist=" ${sat} ${big_satlist} "
    fi
 
    ${COMPRESS} ${imgndir}/${sat}.ctl
@@ -189,11 +189,11 @@ echo " big_satlist: ${big_satlist}"; echo
 #
 export PLOT_WORK_DIR="${PLOT_WORK_DIR}/plotangle_${RADMON_SUFFIX}"
 
-if [[ -d $PLOT_WORK_DIR ]]; then
-   rm -f $PLOT_WORK_DIR
+if [[ -d ${PLOT_WORK_DIR} ]]; then
+   rm -f ${PLOT_WORK_DIR}
 fi
-mkdir -p $PLOT_WORK_DIR
-cd $PLOT_WORK_DIR
+mkdir -p ${PLOT_WORK_DIR}
+cd ${PLOT_WORK_DIR}
 
 
 #-----------------------------------------------------------------
@@ -224,7 +224,7 @@ cmdfile=${PLOT_WORK_DIR}/cmdfile_pangle_${suffix}.${jobctr}
 satarr_len=${#satarr[@]}
 ((satarr_len--))
 
-while [[ $ctr -le ${satarr_len} ]]; do
+while [[ ${ctr} -le ${satarr_len} ]]; do
    type=${satarr[${ctr}]}
 
    #--------------------------------------------------
@@ -244,32 +244,44 @@ while [[ $ctr -le ${satarr_len} ]]; do
    #-------------------------------------
    #  Submit plot job, 4 satypes per job
    #
-   if [[ $itemctr -gt 3 || $ctr -eq ${satarr_len} ]]; then
+   if [[ ${itemctr} -gt 3 || ${ctr} -eq ${satarr_len} ]]; then
    
       chmod 755 ${cmdfile}
 
       jobname=plot_${RADMON_SUFFIX}_ang_${suffix}_${jobctr}
       logfile=${R_LOGDIR}/plot_angle_${suffix}_${jobctr}.log
-      errfile=${R_LOGDIR}/plot_angle_${suffix}_${jobctr}.err
+      if [[ -e ${logfile} ]]; then
+         rm ${logfile}
+      fi
 
-      echo "TASKS= $tasks"
+      errfile=${R_LOGDIR}/plot_angle_${suffix}_${jobctr}.err
+      if [[ -e ${errfile} ]]; then
+         rm ${errfile}
+      fi
+
       if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ||
             ${MY_MACHINE} = "hercules" ]]; then
-         $SUB --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
+         ${SUB} --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
               --wrap "srun -l --multi-prog ${cmdfile}"
 
       elif [[ ${MY_MACHINE} = "jet" ]]; then
-         $SUB --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
+         ${SUB} --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
               -p ${BATCH_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
-      elif [[ $MY_MACHINE = "wcoss2" ]]; then
-	 if [[ $NUM_CYCLES -gt 140 ]]; then
+      elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+	 if [[ ${NUM_CYCLES} -gt 140 ]]; then
             walltm="1:20:00"
 	 else
             walltm="40:00"
 	 fi
-         $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${errfile} \
-            	-V -l walltime=${walltm} -l select=1:ncpus=4:mem=32GB -N ${jobname} ${cmdfile}
+         ${SUB} -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${errfile} \
+              -v "RADMON_SUFFIX=${RADMON_SUFFIX}, PLOT_WORK_DIR=${PLOT_WORK_DIR}, START_DATE=${START_DATE}, PDATE=${PDATE}, \
+                  IMGNDIR=${IMGNDIR}, NCP=${NCP}, UNCOMPRESS=${UNCOMPRESS}, COMPRESS=${COMPRESS}, NUM_CYCLES=${NUM_CYCLES}, \
+		  RAD_AREA=${RAD_AREA}, R_TANKDIR=${R_TANKDIR}, NDATE=${NDATE}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, \
+		  PLOT_STATIC_IMGS=${PLOT_STATIC_IMGS}, GRADS=${GRADS}, PATH=${PATH}, GADDIR=${GADDIR}, IG_GSCRIPTS=${IG_GSCRIPTS}, \
+		  IG_EXEC=${IG_EXEC}, SATYPE=${SATYPE}, MON_USH=${MON_USH}, RUN=${RUN}, Z=${Z}, IG_SCRIPTS=${IG_SCRIPTS}, \
+		  HOMEgdas=${HOMEgdas}" \
+              -l walltime=${walltm} -l select=1:ncpus=4:mem=32GB -N ${jobname} ${cmdfile}
       fi
 
       ((jobctr++)) 
@@ -291,16 +303,16 @@ done
 #   
 
 for sat in ${big_satlist}; do
-   echo processing $sat in $big_satlist
+   echo processing ${sat} in ${big_satlist}
 
    if [[ ${MY_MACHINE} = "wcoss2" ]]; then 	
 
       cmdfile=${PLOT_WORK_DIR}/cmdfile_pangle_${sat}
       if [[ -e ${cmdfile} ]]; then
-         rm -f $cmdfile
+         rm -f ${cmdfile}
       fi
-      echo "$IG_SCRIPTS/plot_angle.sh $sat $sat ${list}" >> $cmdfile
-      chmod 755 $cmdfile
+      echo "${IG_SCRIPTS}/plot_angle.sh ${sat} ${sat} ${list}" >> ${cmdfile}
+      chmod 755 ${cmdfile}
 
       jobname=plot_${RADMON_SUFFIX}_ang_${sat}
       logfile=${R_LOGDIR}/plot_angle_${sat}.log
@@ -312,14 +324,21 @@ for sat in ${big_satlist}; do
       if [[ -e ${errfile} ]]; then
          rm ${errfile}
       fi
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_angle_${sat}.err \
-           -V -l walltime=60:00 -N ${jobname} ${cmdfile}
+
+      ${SUB} -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${R_LOGDIR}/plot_angle_${sat}.err \
+           -v "RADMON_SUFFIX=${RADMON_SUFFIX}, PLOT_WORK_DIR=${PLOT_WORK_DIR}, START_DATE=${START_DATE}, PDATE=${PDATE}, \
+               IMGNDIR=${IMGNDIR}, NCP=${NCP}, UNCOMPRESS=${UNCOMPRESS}, COMPRESS=${COMPRESS}, NUM_CYCLES=${NUM_CYCLES}, \
+	       RAD_AREA=${RAD_AREA}, R_TANKDIR=${R_TANKDIR}, NDATE=${NDATE}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, \
+	       PLOT_STATIC_IMGS=${PLOT_STATIC_IMGS}, GRADS=${GRADS}, PATH=${PATH}, GADDIR=${GADDIR}, IG_GSCRIPTS=${IG_GSCRIPTS}, \
+	       IG_EXEC=${IG_EXEC}, SATYPE=${SATYPE}, MON_USH=${MON_USH}, RUN=${RUN}, Z=${Z}, IG_SCRIPTS=${IG_SCRIPTS}, \
+	       HOMEgdas=${HOMEgdas}" \
+           -l walltime=60:00 -l select=1:ncpus=4:mem=32GB -N ${jobname} ${cmdfile}
 
    #---------------------------------------------------
    #  hera|jet|s4|orion|hercules, submit 1 job for each sat/list item
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || \
-           $MY_MACHINE = "s4"   || $MY_MACHINE = "orion" ||
-           $MY_MACHINE = "hercules" ]]; then		
+   elif [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || \
+           ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ||
+           ${MY_MACHINE} = "hercules" ]]; then		
 
       ii=0
       logfile=${R_LOGDIR}/plot_angle_${sat}.log
@@ -332,29 +351,29 @@ for sat in ${big_satlist}; do
       jobname=plot_${RADMON_SUFFIX}_ang_${sat}
 
       while [[ $ii -le ${#list[@]}-1 ]]; do
-         echo "${ii} ${IG_SCRIPTS}/plot_angle.sh $sat $sat ${list[$ii]}" >> $cmdfile
+         echo "${ii} ${IG_SCRIPTS}/plot_angle.sh ${sat} ${sat} ${list[$ii]}" >> ${cmdfile}
          (( ii=ii+1 ))
       done
       echo "ii = $ii"
 
-      if [[ $MY_MACHINE = "hera" ]]; then
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+      if [[ ${MY_MACHINE} = "hera" ]]; then
+         ${SUB} --account ${ACCOUNT} -n ${ii}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               --mem=0 --wrap "srun -l --multi-prog ${cmdfile}"
 
-      elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+      elif [[ ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
+         ${SUB} --account ${ACCOUNT} -n ${ii}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               -p ${SERVICE_PARTITION} --mem=0 --wrap "srun -l --multi-prog ${cmdfile}"
 
-      elif [[ $MY_MACHINE = "s4" ]]; then
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+      elif [[ ${MY_MACHINE} = "s4" ]]; then
+         ${SUB} --account ${ACCOUNT} -n ${ii}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               --wrap "srun -l --multi-prog ${cmdfile}"
 
-      elif [[ $MY_MACHINE = "jet" ]]; then
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+      elif [[ ${MY_MACHINE} = "jet" ]]; then
+         ${SUB} --account ${ACCOUNT} -n ${ii}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               -p ${BATCH_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
       else
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+         ${SUB} --account ${ACCOUNT} -n ${ii}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
       fi
 
