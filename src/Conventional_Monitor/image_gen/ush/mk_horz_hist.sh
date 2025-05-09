@@ -6,6 +6,7 @@
 #
 #------------------------------------------------------------------
    echo "--> mk_horz_hist.sh"
+   set -x
 
    echo "CONMON_SUFFIX = $CONMON_SUFFIX"
    echo "C_TANKDIR   = $C_TANKDIR"
@@ -62,11 +63,17 @@
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_hist}
 
-   elif [[ $MY_MACHINE == "wcoss2" ]]; then
-      $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
-                -l select=1:mem=1G ${plot_hist}
+   elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
+      ${SUB} -v "PDATE=${PDATE}, MON_USH=${MON_USH}, RUN=${RUN}, CONMON_SUFFIX=${CONMON_SUFFIX}, \
+	         TANKDIR=${TANKDIR}, COMPRESS=${COMPRESS}, UNCOMPRESS=${UNCOMPRESS}, C_IMGNDIR=${C_IMGNDIR}, \
+	         HOMEgdas_conmon=${HOMEgdas_conmon}, C_IG_FIX=${C_IG_FIX}, C_IG_GSCRIPTS=${C_IG_GSCRIPTS}, \
+		 C_PLOT_WORKDIR=${C_PLOT_WORKDIR}" \
+             -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
+             -l select=1:mem=1G ${plot_hist}
+
    fi
 
+exit
 
    #------------------------------
    # submit the plot_horz job

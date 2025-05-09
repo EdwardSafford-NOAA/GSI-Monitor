@@ -150,11 +150,11 @@ function large_mv () {
    done
 
 
-   if [[ ${C_IG_SAVE_WORK} -eq 0 ]]; then
-      cd ${workdir}
-      cd ..
-      rm -rf ${workdir}
-   fi
+#  if [[ ${C_IG_SAVE_WORK} -eq 0 ]]; then
+#     cd ${workdir}
+#     cd ..
+#     rm -rf ${workdir}
+#  fi
 
 
    echo "<-- plot_time.sh"

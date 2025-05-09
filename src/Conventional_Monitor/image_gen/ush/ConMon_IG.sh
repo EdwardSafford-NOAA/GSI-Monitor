@@ -186,7 +186,7 @@ if [[ $PDATE -le ${last_cycle} ]]; then
    #--------------------------------------------------------------------
    ${C_IG_SCRIPTS}/mk_horz_hist.sh
 
-   ${C_IG_SCRIPTS}/mk_time_vert.sh
+#   ${C_IG_SCRIPTS}/mk_time_vert.sh
 
    #--------------------------------------------------------------------
    #  Update the last_plot_time file if found
@@ -198,15 +198,15 @@ if [[ $PDATE -le ${last_cycle} ]]; then
    #--------------------------------------------------------------------
    #  Mail warning reports 
    #--------------------------------------------------------------------
-   if [[ $DO_DATA_RPT = 1 ]]; then
-     warn_file=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/horz_hist/ges/err_rpt.ges.${PDATE}
-     if [[ -e ${warn_file} ]]; then
-       echo "mailing err_rpt"          
-       /bin/mail -s "ConMon warning" -c "${MAIL_CC}" ${MAIL_TO} < ${warn_file} 
-     fi
-   fi
+#  if [[ $DO_DATA_RPT = 1 ]]; then
+#    warn_file=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/horz_hist/ges/err_rpt.ges.${PDATE}
+#    if [[ -e ${warn_file} ]]; then
+#      echo "mailing err_rpt"          
+#      /bin/mail -s "ConMon warning" -c "${MAIL_CC}" ${MAIL_TO} < ${warn_file} 
+#    fi
+#  fi
 
-   ${C_IG_SCRIPTS}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --nfl ${NUM_IMG_CYCLES}
+#  ${C_IG_SCRIPTS}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --nfl ${NUM_IMG_CYCLES}
 
 else
    echo "UNABLE to plot ${PDATE}, last processed date is ${last_cycle}"
