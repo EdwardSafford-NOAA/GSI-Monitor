@@ -187,6 +187,16 @@ if [[  -d ${DATA_LOCATION} ]]; then
         -o ${logfile} --ntasks=1 --mem=5g ${job}
 
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
+      #---------------------------------------------------------------------
+      # The qsub manual says the -v option (used to export variables to the
+      # submitted job) can be done in two ways:
+      #
+      #    Method 1:   -v VAR1=value1,VAR2=value2,... 
+      #    Method 2:   -v VAR1=value1 -v VAR2=value2 ....
+      #
+      # Method 1 is a comma separated list with NO spaces.
+      # Method 2 does _NOT_ work on wcoss2 for whatever reason.  
+      #---------------------------------------------------------------------
       $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/CP.${PDY}.${CYC}.err \
            -v "RADMON_SUFFIX=${RADMON_SUFFIX}, PDATE=${PDATE}, RUN=${RUN}, DATA_LOCATION=${DATA_LOCATION}, \
               NDATE=${NDATE}, TANKverf=${TANKverf}, PDY=${PDY}, CYC=${CYC}, FIXgdas=${FIXgdas}, Z=${Z}, \

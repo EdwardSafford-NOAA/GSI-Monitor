@@ -185,6 +185,11 @@ if [[ -e ${logfile} ]]; then
    rm ${logfile}
 fi
 
+errfile=${R_LOGDIR}/plot_summary.err
+if [[ -e ${errfile} ]]; then
+   rm ${errfile}
+fi
+
 if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ]]; then
    ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
           -o ${logfile} ${IG_SCRIPTS}/plot_summary.sh
@@ -198,8 +203,13 @@ elif [[ ${MY_MACHINE} = "jet" ]]; then
           --partition ${BATCH_PARTITION} -o ${logfile} ${IG_SCRIPTS}/plot_summary.sh
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_summary.err -V \
-          -l select=1:mem=1g -l walltime=30:00 -N ${jobname} ${IG_SCRIPTS}/plot_summary.sh
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${errfile} \
+        -v "RADMON_SUFFIX=${RADMON_SUFFIX}, PLOT_WORK_DIR=${PLOT_WORK_DIR}, START_DATE=${START_DATE}, \
+	   PDATE=${PDATE}, IMGNDIR=${IMGNDIR}, NCP=${NCP}, UNCOMPRESS=${UNCOMPRESS}, COMPRESS=${COMPRESS}, \
+	   RAD_AREA=${RAD_AREA}, R_TANKDIR=${R_TANKDIR}, NDATE=${NDATE}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, \
+	   PLOT_STATIC_IMGS=${PLOT_STATIC_IMGS}, GRADS=${GRADS}, PATH=${PATH}, GADDIR=${GADDIR}, \
+	   IG_EXEC=${IG_EXEC}, SATYPE=${SATYPE}, MON_USH=${MON_USH}, RUN=${RUN}, Z=${Z}, IG_GSCRIPTS=${IG_GSCRIPTS}" \
+        -l select=1:mem=1g -l walltime=30:00 -N ${jobname} ${IG_SCRIPTS}/plot_summary.sh
 fi
 
 
@@ -241,6 +251,11 @@ if [[ -e ${logfile} ]]; then
    rm ${logfile}
 fi
 
+errfile=${R_LOGDIR}/plot_time_${suffix}.err
+if [[ -e ${errfile} ]]; then
+   rm ${errfile}
+fi
+
 >$cmdfile
 
 ctr=0
@@ -271,7 +286,12 @@ elif [[ $MY_MACHINE = "jet" ]]; then
         -p ${BATCH_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_time_${suffix}.err -V \
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${errfile} \
+        -v "RADMON_SUFFIX=${RADMON_SUFFIX}, PLOT_WORK_DIR=${PLOT_WORK_DIR}, START_DATE=${START_DATE}, \
+	   PDATE=${PDATE}, IMGNDIR=${IMGNDIR}, NCP=${NCP}, UNCOMPRESS=${UNCOMPRESS}, COMPRESS=${COMPRESS}, \
+	   RAD_AREA=${RAD_AREA}, R_TANKDIR=${R_TANKDIR}, NDATE=${NDATE}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, \
+	   PLOT_STATIC_IMGS=${PLOT_STATIC_IMGS}, GRADS=${GRADS}, PATH=${PATH}, GADDIR=${GADDIR}, IG_GSCRIPTS=${IG_GSCRIPTS}, \
+	   IG_EXEC=${IG_EXEC}, SATYPE=${SATYPE}, MON_USH=${MON_USH}, RUN=${RUN}, Z=${Z}, IG_SCRIPTS=${IG_SCRIPTS}" \
         -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} ${cmdfile}
 fi
       
@@ -333,7 +353,17 @@ for sat in ${bigSATLIST}; do
          rm ${logfile}
       fi
 
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_time_${sat}.err -V \
+      errfile=${R_LOGDIR}/plot_time_${sat}.err
+      if [[ -e ${errfile} ]]; then
+         rm ${errfile}
+      fi
+
+      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${errfile} \
+           -v "RADMON_SUFFIX=${RADMON_SUFFIX}, PLOT_WORK_DIR=${PLOT_WORK_DIR}, START_DATE=${START_DATE}, \
+   	       PDATE=${PDATE}, IMGNDIR=${IMGNDIR}, NCP=${NCP}, UNCOMPRESS=${UNCOMPRESS}, COMPRESS=${COMPRESS}, \
+      	       RAD_AREA=${RAD_AREA}, R_TANKDIR=${R_TANKDIR}, NDATE=${NDATE}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, \
+   	       PLOT_STATIC_IMGS=${PLOT_STATIC_IMGS}, GRADS=${GRADS}, PATH=${PATH}, GADDIR=${GADDIR}, IG_GSCRIPTS=${IG_GSCRIPTS}, \
+               IG_EXEC=${IG_EXEC}, SATYPE=${SATYPE}, MON_USH=${MON_USH}, RUN=${RUN}, Z=${Z}, IG_SCRIPTS=${IG_SCRIPTS}" \
            -l select=1:mem=1g -l walltime=1:30:00 -N ${jobname} ${cmdfile}
    fi
 

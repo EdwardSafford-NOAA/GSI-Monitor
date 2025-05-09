@@ -286,6 +286,9 @@ ${IG_SCRIPTS}/mk_angle_plots.sh
 
 if [[ ${PLOT_STATIC_IMGS} -eq 1 ]]; then
    ${IG_SCRIPTS}/mk_bcor_plots.sh
+   export INCLUDE_PNGS=1
+else
+   export INCLUDE_PNGS=0
 fi
 
 #--------------------------------------------------------------------
@@ -357,7 +360,9 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
       elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
          run_time="$rhr$cmin"	# HHMM format for qsub
 	 $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${transfer_err} \
-	      -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} -a ${run_time} ${cmdfile}
+              -v "TANKimg=${TANKimg}, INCLUDE_PNGS=${INCLUDE_PNGS}, WEBSVR=${WEBSVR}, \
+                 WEBUSER=${WEBUSER}, WEBDIR=${WEBDIR}, Z=${Z}" \
+              -l select=1:mem=500M -l walltime=45:00 -N ${jobname} -a ${run_time} ${cmdfile}
       fi
 
 

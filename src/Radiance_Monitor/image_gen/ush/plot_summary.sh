@@ -11,22 +11,25 @@ SATYPE2=$SATYPE
 echo; echo "Start plot_summary.sh"
 
 #------------------------------------------------------------------
-# Set environment variables.
+# Set up workspace
+#
 tmpdir=${PLOT_WORK_DIR}/plot_summary_${RADMON_SUFFIX}
-rm -rf $tmpdir
-mkdir -p $tmpdir
-cd $tmpdir
+if [[ -e ${tmpdir} ]]; then
+   rm -rf ${tmpdir}
+fi
 
+mkdir -p ${tmpdir}
+cd ${tmpdir}
 
 #------------------------------------------------------------------
 #   Set dates
 #
 bdate=${START_DATE}
-edate=$PDATE
-bdate0=`echo $bdate|cut -c1-8`
-edate0=`echo $edate|cut -c1-8`
+edate=${PDATE}
+bdate0=`echo ${bdate}|cut -c1-8`
+edate0=`echo ${edate}|cut -c1-8`
 
-ctldir=$IMGNDIR/time
+ctldir=${IMGNDIR}/time
 usef="use.txt"
 timesf="times.txt"
 chanf="chan.txt"
@@ -38,16 +41,15 @@ chanf="chan.txt"
 # server.
 #
 for type in ${SATYPE2}; do
-
-   $NCP $ctldir/${type}*.ctl* ./
+   ${NCP} $ctldir/${type}*.ctl* ./
    ${UNCOMPRESS} *.ctl.${Z}
 
-   cdate=$bdate
+   cdate=${bdate}
 
    #-------------------------------------
    #  Locate and copy data files.
    #
-   while [[ $cdate -le $edate ]]; do
+   while [[ ${cdate} -le ${edate} ]]; do
 
       #-----------------------------------------------------------
       #  Locate the data files, first checking for a tar file,
@@ -57,7 +59,7 @@ for type in ${SATYPE2}; do
          pdy=`echo ${cdate}|cut -c1-8`
 	 ieee_src=${TANKverf}/radmon.${pdy} 
       else
-         ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
+         ieee_src=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
 	           --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
       fi
 
@@ -74,14 +76,14 @@ for type in ${SATYPE2}; do
 
          else				
             files=`ls ${ieee_src}/time.*${type}*ieee_d*`
-            for f in ${files}; do
-               $NCP ${f} .
+            for file in ${files}; do
+               ${NCP} ${file} .
             done
          fi
       fi
 
       adate=`$NDATE +${CYCLE_INTERVAL} ${cdate}`
-      cdate=$adate
+      cdate=${adate}
    done
 
    ${UNCOMPRESS} *.ieee_d.${Z}
@@ -91,13 +93,14 @@ for type in ${SATYPE2}; do
    #
    prefix="time."
    dfiles=`ls *.ieee_d 2>/dev/null`
-   if [[ $dfiles = "" ]]; then
-      echo "NO DATA available for $type, aborting summary plot"
+
+   if [[ ${dfiles} = "" ]]; then
+      echo "NO DATA available for ${type}, aborting summary plot"
       continue
    fi
 
-   for file in $dfiles; do
-      newfile=`basename $file | sed -e "s/^$prefix//"`
+   for file in ${dfiles}; do
+      newfile=`basename ${file} | sed -e "s/^${prefix}//"`
       mv ./${file} ./${newfile}
    done
    
@@ -111,7 +114,7 @@ for type in ${SATYPE2}; do
    #  At present this only affects the summary plots, but will eventually
    #  include most radiance images.
    #
-   if [[ $PLOT_STATIC_IMGS -eq 1 ]]; then
+   if [[ ${PLOT_STATIC_IMGS} -eq 1 ]]; then
 
       outfile=${tmpdir}/${type}.gs
       rm -f ${outfile}
@@ -122,7 +125,7 @@ cat << EOF > ${outfile}
 'quit'
 EOF
 
-      $GRADS -bpc "run ${outfile}"
+      ${GRADS} -bpc "run ${outfile}"
    fi
 
 
@@ -140,8 +143,8 @@ EOF
    #       e) copy the [satype].sum.txt file to $TANKverf/imgn/{suffix}/pngs/summary/.
    #       f) clean up
 
-   if [[ -e $timesf ]]; then
-      rm -f $timesf
+   if [[ -e ${timesf} ]]; then
+      rm -f ${timesf}
    fi
 
    if [[ ! -s summary.x ]]; then
@@ -206,7 +209,7 @@ if [[ ! -d ${IMGNDIR}/summary ]]; then
    mkdir -p ${IMGNDIR}/summary
 fi
 
-if [[ $PLOT_STATIC_IMGS -eq 1 ]]; then
+if [[ ${PLOT_STATIC_IMGS} -eq 1 ]]; then
    $NCP *summary.png ${IMGNDIR}/summary/.
 fi
 
@@ -218,9 +221,9 @@ done
 #--------------------------------------------------------------------
 # Clean $tmpdir. 
 #
-cd $tmpdir
+cd ${tmpdir}
 cd ../
-rm -rf $tmpdir
+rm -rf ${tmpdir}
 
 echo "End plot_summary.sh"; echo
 

@@ -48,6 +48,7 @@ jobid=${jobid:-"${outid}.o${pid}"}
 export RADMON_SUFFIX=${RADMON_SUFFIX:-$NET}
 export DATAROOT=${DATAROOT:-/tmpnwprod2}
 export DATA=${DATA:-${DATAROOT}/${jobid}}
+export PDATE=${PDY}${cyc}
 
 mkdir -p $DATA
 cd $DATA

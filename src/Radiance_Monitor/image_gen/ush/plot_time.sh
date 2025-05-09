@@ -11,6 +11,7 @@ PVAR=$2
 PTYPE=$3
 
 echo; echo "Starting plot_time.sh"; echo
+echo "IG_EXEC: $IG_EXEC"
 
 #-----------------------------------------------
 # Make sure IMGNDIR/time directory exists and
@@ -19,10 +20,13 @@ echo; echo "Starting plot_time.sh"; echo
 if [[ ! -d ${IMGNDIR}/time ]]; then
    mkdir -p ${IMGNDIR}/time
 fi
+
 tmpdir=${PLOT_WORK_DIR}/plot_time_${RADMON_SUFFIX}_${SATYPE2}.$PDATE.${PVAR}
-rm -rf $tmpdir
-mkdir -p $tmpdir
-cd $tmpdir
+if [[ -e ${tmpdir} ]]; then
+   rm -rf ${tmpdir}
+fi
+mkdir -p ${tmpdir}
+cd ${tmpdir}
 
 plot_time_count=plot_time_count.${RAD_AREA}.gs
 echo plot_time_count = ${plot_time_count}
@@ -36,11 +40,11 @@ echo tmpdir        = ${tmpdir}
 #   Set dates
 #
 bdate=${START_DATE}
-edate=$PDATE
-bdate0=`echo $bdate|cut -c1-8`
-edate0=`echo $edate|cut -c1-8`
+edate=${PDATE}
+bdate0=`echo ${bdate}|cut -c1-8`
+edate0=`echo ${edate}|cut -c1-8`
 
-ctldir=$IMGNDIR/time
+ctldir=${IMGNDIR}/time
 
 
 #--------------------------------------------------------------------
@@ -106,8 +110,8 @@ for type in ${SATYPE2}; do
       continue
    fi
 
-   for file in $dfiles; do
-      newfile=`basename $file | sed -e "s/^$prefix//"`
+   for file in ${dfiles}; do
+      newfile=`basename ${file} | sed -e "s/^${prefix}//"`
       mv ./${file} ./${newfile}
    done
 

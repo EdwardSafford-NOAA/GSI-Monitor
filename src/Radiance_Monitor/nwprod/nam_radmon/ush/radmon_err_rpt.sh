@@ -24,7 +24,7 @@ diag_rpt=${6:-${diag_rpt:?}}
 outfile=${7:-${outfile:?}}
 
 # Directories
-HOMEradmon=${HOMEradmon:-$(pwd)}
+HOMEradmon=${HOMEradmon:-$(pwd)}	#not used?
 
 # Other variables
 VERBOSE=${VERBOSE:-NO}

@@ -1,4 +1,5 @@
 #! /bin/bash 
+set -x
 
 #------------------------------------------------------------------
 #  plot_summary.sh
@@ -15,9 +16,11 @@ ptype=$2
 # Set work space for this SATYPE source.
 #
 tmpdir=${WORKDIR}/${SATYPE}.${ptype}.${PDATE}
-rm -rf $tmpdir
-mkdir -p $tmpdir
-cd $tmpdir
+if [[ -d ${tmpdir} ]]; then
+   rm -rf ${tmpdir}
+fi
+mkdir -p ${tmpdir}
+cd ${tmpdir}
 
 
 #------------------------------------------------------------------
@@ -64,7 +67,7 @@ if [[ -e ${SATYPE}.${ptype}.ctl ]]; then
    bdate=`${NDATE} -${hrs} ${PDATE}`
    ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${SATYPE}.${ptype}.ctl ${bdate} ${NUM_CYCLES} 
 
-cat << EOF > ${SATYPE}.gs
+cat << EOF > ${tmpdir}/${SATYPE}.gs
 'open ${SATYPE}.${ptype}.ctl'
 'run ${OZN_IG_GSCRPTS}/plot_summary.gs ${OZNMON_SUFFIX} ${RUN} ${SATYPE} ${ptype} x750 y700'
 'quit'

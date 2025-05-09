@@ -86,7 +86,12 @@ for dsrc in ${data_source}; do
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
 
       $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logf} -e ${errf} \
-           -V -l select=1:mem=500M -l walltime=10:00 -N ${job} ${cmdfile}
+           -v "WORKDIR=${WORKDIR}, PDATE=${PDATE}, MON_USH=${MON_USH}, OZNMON_SUFFIX=${OZNMON_SUFFIX}, \
+	      NDATE=${NDATE}, UNCOMPRESS=${UNCOMPRESS}, COMPRESS=${COMPRESS}, NUM_CYCLES=${NUM_CYCLES}, \
+	      OZN_IG_SCRIPTS=${OZN_IG_SCRIPTS}, GRADS=${GRADS}, NCP=${NCP}, KEEPDATA=${KEEPDATA}, RUN=${RUN}, \
+	      OZN_TANKDIR=${OZN_TANKDIR}, CYCLE_INTERVAL=${CYCLE_INTERVAL}, OZN_IG_GSCRPTS=${OZN_IG_GSCRPTS}, \
+	      PATH=${PATH}, GADDIR=${GADDIR}, OZN_IMGS_TIME=${OZN_IMGS_TIME}" \
+	   -l select=1:mem=500M -l walltime=10:00 -N ${job} ${cmdfile}
    fi
 
 
