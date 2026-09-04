@@ -61,8 +61,10 @@ function time_cnt_ps (args)
 
 *        In order to save space skip certain redundant regions.
 *           skipping region2, N. Hemisphere
+*           skipping region3, Central America
+*           skipping region6, Eastern Caribbean
          if ( restrict = 1 )
-            if ( iy = 2 )
+            if ( iy = 2 | iy = 3 | iy = 6 )
                iy=iy+1
                continue
             endif

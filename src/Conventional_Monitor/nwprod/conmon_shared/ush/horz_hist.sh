@@ -18,6 +18,7 @@
    #----------------------------------------------------------
    # The list of data type, based on convinfo.txt file
    #----------------------------------------------------------
+   gps_TYPE=`${USHconmon}/get_typelist.pl --file $convinfo --type gps --mon`
    ps_TYPE=`${USHconmon}/get_typelist.pl --file $convinfo --type ps --mon`
    q_TYPE=`${USHconmon}/get_typelist.pl --file $convinfo --type q --mon`
    t_TYPE=`${USHconmon}/get_typelist.pl --file $convinfo --type t --mon`

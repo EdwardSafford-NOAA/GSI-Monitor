@@ -204,7 +204,7 @@ module data
   integer, parameter, public :: idx_uses_gps         = 20    ! uses gps_ref      
   integer, parameter, public :: idx_qref_gps         = 21    ! specific humidity at obs location (kg/kg)
   integer, parameter, public :: idx_spread_gps       = 22    ! spread
-
+  integer, parameter, public :: idx_omgnbc_gps       = 23    ! obs-ges without bias correction
 
   ! Data is stored in data_t
   type :: data_t

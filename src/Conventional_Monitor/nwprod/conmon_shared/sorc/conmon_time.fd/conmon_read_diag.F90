@@ -1591,6 +1591,7 @@ module conmon_read_diag
             if( allocated ( Observation                       )) ptr%p%rdiag( idx_obs_gps ) = Observation( ii )
             if( allocated ( Temperature_at_Obs_Location       )) ptr%p%rdiag( idx_tref_gps ) = Temperature_at_Obs_Location( ii )
 !            if( allocated ( Obs_Minus_Forecast_unadjusted    )) ptr%p%rdiag( idx_hob_gps ) = Obs_Minus_Forecast_unadjusted( ii )  
+            if( allocated ( Obs_Minus_Forecast_unadjusted     )) ptr%p%rdiag( idx_omgnbc_gps ) = Obs_Minus_Forecast_unadjusted( ii )
             if( allocated ( GPS_Type                          )) ptr%p%rdiag( idx_uses_gps ) = GPS_Type( ii )
             if( allocated ( Specific_Humidity_at_Obs_Location )) ptr%p%rdiag( idx_qref_gps ) = Specific_Humidity_at_Obs_Location( ii )
 

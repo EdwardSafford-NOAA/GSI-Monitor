@@ -33,7 +33,7 @@ function ps_time_count (args)
 *     In order to save space skip regions N. Hemisphere(2), S. Hemisphere(3), and Canada(6)
 *        skipping region2, N. Hemisphere
       if ( restrict = 1 )
-         if ( iy = 2 )
+         if ( iy = 2 | iy = 3 | iy = 6 )
             iy=iy+1
             continue
          endif

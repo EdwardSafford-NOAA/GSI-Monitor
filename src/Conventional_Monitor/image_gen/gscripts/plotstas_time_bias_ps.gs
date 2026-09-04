@@ -34,7 +34,7 @@ function time_bias_ps (args)
 *        
       if ( restrict = 1 )
          say 'restrict true 'restrict
-         if ( iy = 2 )
+         if ( iy = 2 | iy = 3 | iy = 6 )
             iy=iy+1
             continue
          endif

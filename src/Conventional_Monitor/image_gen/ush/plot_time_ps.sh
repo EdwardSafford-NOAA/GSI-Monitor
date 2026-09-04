@@ -22,7 +22,7 @@
 
    ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_count_ps.gs . 
    ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias_ps.gs  . 
-   ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias2_ps.gs  . 
+#   ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias2_ps.gs  . 
 
    #---------------------------------------------------
    #  Link in the data files.
@@ -95,7 +95,7 @@
 
    grads -bpc "run ./plotstas_time_count_ps.gs"
    grads -bpc "run ./plotstas_time_bias_ps.gs"
-   grads -bpc "run ./plotstas_time_bias2_ps.gs"
+#   grads -bpc "run ./plotstas_time_bias2_ps.gs"
 
    img_files=`ls *.png`
    for imgf in ${img_files}; do

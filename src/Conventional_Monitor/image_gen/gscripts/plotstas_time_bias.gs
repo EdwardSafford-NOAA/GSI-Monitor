@@ -57,8 +57,10 @@ function time_bias (args)
 
 *        In order to save space skip certain redundant regions.
 *           region2 is N. Hemisphere
+*           region3 is Central America
+*           region6 is Eastern Caribbean
          if ( restrict = 1 )
-            if ( iy = 2 )
+            if ( iy = 2 | iy = 3 | iy = 6 )
                iy=iy+1
                continue
             endif

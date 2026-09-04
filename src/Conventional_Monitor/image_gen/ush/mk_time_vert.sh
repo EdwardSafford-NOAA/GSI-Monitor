@@ -93,7 +93,7 @@ echo "--> mk_time_vert.sh"
    #--------------------------------------------
    #  submit vertical plots
    #--------------------------------------------
-   for type in q t uv u v; do
+   for type in gps q t uv u v; do
 
       export TYPE=${type}
       jobname="${JOBNAME}_vert_${type}"

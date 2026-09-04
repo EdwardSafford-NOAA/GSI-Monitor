@@ -23,7 +23,7 @@ subroutine stascal_gps(rdiag,nreal,n,iotype,varqc,ntype,work,&
    real cvar_pg,cvar_b,rat_err2
 
    itype=1;isubtype=2;ilat=3;ilon=4;iheight=7;iqc=9;iuse=11;imuse=12
-   iwgt=13;ierr1=14;ierr2=15;ierr3=16;iobg=18;iobgu=18;iobgv=21;iqsges=20
+   iwgt=13;ierr1=14;ierr2=15;ierr3=16;iobg=23;iobgu=18;iobgv=21;iqsges=20
    iobsu=17;iobsv=20
 
    pi=acos(-1.0)
@@ -35,6 +35,8 @@ subroutine stascal_gps(rdiag,nreal,n,iotype,varqc,ntype,work,&
    print *,'--> stascal_gps'
    
    do i=1,n
+      print *,'  rdiag(iobg,1), rdiag(ierr1,i) : ', rdiag(iobg,i), rdiag(ierr1,i)
+
       val=rdiag(iobg,i)*rdiag(ierr1,i)
       val2     = val*val
 
@@ -105,3 +107,4 @@ subroutine stascal_gps(rdiag,nreal,n,iotype,varqc,ntype,work,&
    print *,'<-- stascal_gps'
    return
 end
+
