@@ -36,12 +36,13 @@
 #  export nreal_uv=${nreal_uv:-23} 
 
    export nreal_ps=${nreal_ps:-20}
+   export nreal_gps=${nreal_gps:-20}
    export nreal_q=${nreal_q:-21} 
    export nreal_t=${nreal_t:-20} 
    export nreal_uv=${nreal_uv:-25} 
 
 
-   for type in ps q t uv; do
+   for type in gps ps q t uv; do
 
       eval stype=\${${type}_TYPE}
       eval nreal=\${nreal_${type}}
