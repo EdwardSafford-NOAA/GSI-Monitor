@@ -5,11 +5,7 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^(GNU)$")
 endif()
 
 list(APPEND SRCS
-  conmon_read_diag.F90
   convinfo2.f90
-  data_mod.f90
-  generic_list.f90
-  kinds.F90
   mainconv_time.f90
   process_time_data.f90
   stas2ctl.f90
@@ -20,6 +16,7 @@ list(APPEND SRCS
 add_executable(conmon_time.x ${SRCS})
 
 target_compile_definitions(conmon_time.x PRIVATE "_REAL8_")
+target_link_libraries(conmon_time.x PRIVATE conmon_shared)
 target_link_libraries(conmon_time.x PRIVATE NetCDF::NetCDF_Fortran)
 target_link_libraries(conmon_time.x PRIVATE ncdiag::ncdiag_serial)
 target_link_libraries(conmon_time.x PRIVATE w3emc::w3emc_4)
