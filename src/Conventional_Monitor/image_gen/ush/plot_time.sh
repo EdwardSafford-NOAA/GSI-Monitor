@@ -59,7 +59,7 @@ function large_mv () {
             if [[ -e ${data_fp}.${Z} ]]; then
                cp -f ${data_fp}.${Z} ./${data_file}.${Z}
                $UNCOMPRESS ${data_file}.${Z}
-            elif [[ -e ./${data_file_fp} ]]; then
+            elif [[ -e ./${data_fp} ]]; then
                cp -f ${data_fp} ./${data_file}
             fi
 
@@ -113,7 +113,6 @@ function large_mv () {
    #---------------------------------------------------
 
    for script in plotstas_time_count.gs plotstas_time_bias.gs ;do
-#   for script in plotstas_time_count.gs plotstas_time_bias.gs plotstas_time_bias2.gs ;do
 #      if [[ ${TYPE} = 'gps' && ${script} != 'plotstas_time_count.gs' ]]; then
 #         continue
 #      fi
