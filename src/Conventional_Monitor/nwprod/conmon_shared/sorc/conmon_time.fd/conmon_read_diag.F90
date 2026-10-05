@@ -474,14 +474,14 @@ module conmon_read_diag
                !-------------------------------------------------
                ! Initialize the list with the first data element
                !
-               call list_init(list, transfer(ptr, list_data))
+               call list_init(list, ptr)
                next => list
 
             else
                !-------------------------------------------------
                ! Insert subsequent nodes into the list
                !
-               call list_insert(next, transfer(ptr, list_data))
+               call list_insert(next, ptr)
                next => list_next(next)
             end if
 
@@ -680,14 +680,14 @@ module conmon_read_diag
                !-------------------------------------------------
                ! Initialize the list with the first data element
                !
-               call list_init(list, transfer(ptr, list_data))
+               call list_init(list, ptr)
                next => list
 
             else
                !-------------------------------------------------
                ! Insert subsequent nodes into the list
                !
-               call list_insert(next, transfer(ptr, list_data))
+               call list_insert(next, ptr)
                next => list_next(next)
             end if
 
@@ -912,14 +912,14 @@ module conmon_read_diag
                !-------------------------------------------------
                ! Initialize the list with the first data element
                !
-               call list_init(list, transfer(ptr, list_data))
+               call list_init(list, ptr)
                next => list
   
             else
                !-------------------------------------------------
                ! Insert subsequent nodes into the list
                !
-               call list_insert(next, transfer(ptr, list_data))
+               call list_insert(next, ptr)
                next => list_next(next)
             end if
 
@@ -1150,14 +1150,14 @@ module conmon_read_diag
                !-------------------------------------------------
                ! Initialize the list with the first data element
                !
-               call list_init(list, transfer(ptr, list_data))
+               call list_init(list, ptr)
                next => list
    
             else
                !-------------------------------------------------
                ! Insert subsequent nodes into the list
                !
-               call list_insert(next, transfer(ptr, list_data))
+               call list_insert(next, ptr)
                next => list_next(next)
 
             end if
@@ -1370,14 +1370,14 @@ module conmon_read_diag
                !-------------------------------------------------
                ! Initialize the list with the first data element
                !
-               call list_init(list, transfer(ptr, list_data))
+               call list_init(list, ptr)
                next => list
    
             else
                !-------------------------------------------------
                ! Insert subsequent nodes into the list
                !
-               call list_insert(next, transfer(ptr, list_data))
+               call list_insert(next, ptr)
                next => list_next(next)
             end if
 
@@ -1618,14 +1618,14 @@ module conmon_read_diag
                !-------------------------------------------------
                ! Initialize the list with the first data element
                !
-               call list_init(list, transfer(ptr, list_data))
+               call list_init(list, ptr)
                next => list
    
             else
                !-------------------------------------------------
                ! Insert subsequent nodes into the list
                !
-               call list_insert(next, transfer(ptr, list_data))
+               call list_insert(next, ptr)
                next => list_next(next)
   
             end if
@@ -1774,14 +1774,14 @@ module conmon_read_diag
                   !-------------------------------------------------
                   ! Initialize the list with the first data element
                   !
-                  call list_init(list, transfer(ptr, list_data))
+                  call list_init(list, ptr)
                   next => list
 
                else
                   !-------------------------------------------------
                   ! Insert subsequent nodes into the list
                   !
-                  call list_insert(next, transfer(ptr, list_data))
+                  call list_insert(next, ptr)
                   next => list_next(next)
    
                end if

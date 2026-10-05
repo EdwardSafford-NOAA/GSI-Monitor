@@ -1,19 +1,18 @@
 module generic_list
 
+  use data
+
   implicit none
 
   private
-  public :: list_node_t, list_data
+  public :: list_node_t
   public :: list_init, list_free
   public :: list_insert, list_put, list_get, list_next
-
-  ! A public variable used as a MOLD for transfer()
-  integer, dimension(:), allocatable :: list_data
 
   ! Linked list node
   type :: list_node_t
      private
-     integer, dimension(:), pointer :: data => null()
+     type(data_ptr) :: data
      type(list_node_t), pointer :: next => null()
   end type list_node_t
 
@@ -25,16 +24,15 @@ contains
   !
   subroutine list_init(self, data)
     type(list_node_t), pointer :: self
-    integer, dimension(:), intent(in), optional :: data
+    type(data_ptr), intent(in), optional :: data
 
     allocate(self)
     nullify(self%next)
 
     if (present(data)) then
-       allocate(self%data(size(data)))
        self%data = data
     else
-       nullify(self%data)
+       nullify(self%data%p)
     end if
   end subroutine list_init
 
@@ -50,9 +48,9 @@ contains
     current => self
     do while (associated(current))
        next => current%next
-       if (associated(current%data)) then
-          deallocate(current%data)
-          nullify(current%data)
+       if (associated(current%data%p)) then
+          deallocate(current%data%p)
+          nullify(current%data%p)
        end if
        deallocate(current)
        nullify(current)
@@ -66,16 +64,16 @@ contains
   !
   subroutine list_insert(self, data)
     type(list_node_t), pointer :: self
-    integer, dimension(:), intent(in), optional :: data
+    type(data_ptr), intent(in), optional :: data
     type(list_node_t), pointer :: next
 
     allocate(next)
+    nullify(next%next)
 
     if (present(data)) then
-       allocate(next%data(size(data)))
        next%data = data
     else
-       nullify(next%data)
+       nullify(next%data%p)
     end if
 
     next%next => self%next
@@ -84,15 +82,15 @@ contains
 
 
   !-------------------------------------------
-  ! Store the encoded DATA in list node SELF
+  ! Store DATA in list node SELF
   !
   subroutine list_put(self, data)
     type(list_node_t), pointer :: self
-    integer, dimension(:), intent(in) :: data
+    type(data_ptr), intent(in) :: data
 
-    if (associated(self%data)) then
-       deallocate(self%data)
-       nullify(self%data)
+    if (associated(self%data%p)) then
+       deallocate(self%data%p)
+       nullify(self%data%p)
     end if
     self%data = data
   end subroutine list_put
@@ -103,8 +101,8 @@ contains
   !
   function list_get(self) result(data)
     type(list_node_t), pointer :: self
-    integer, dimension(:), pointer :: data
-    data => self%data
+    type(data_ptr) :: data
+    data = self%data
   end function list_get
 
 

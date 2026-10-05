@@ -366,7 +366,7 @@ module conmon_process_time_data
             obs_ctr = 0
             do while ( associated( next ) .eqv. .TRUE. )
                obs_ctr = obs_ctr + 1
-               ptr = transfer(list_get( next ), ptr)
+               ptr = list_get( next )
                next => list_next( next )
 
                do jj = 1, max_rdiag_reals
@@ -391,7 +391,7 @@ module conmon_process_time_data
             obs_ctr = 0
             do while ( associated( next ) .eqv. .TRUE. )
                obs_ctr = obs_ctr + 1
-               ptr = transfer(list_get( next ), ptr)
+               ptr = list_get( next )
                next => list_next( next )
 
                do jj = 1, max_rdiag_reals
@@ -416,7 +416,7 @@ module conmon_process_time_data
             obs_ctr = 0
             do while ( associated( next ) .eqv. .TRUE. )
                obs_ctr = obs_ctr + 1
-               ptr = transfer(list_get( next ), ptr)
+               ptr = list_get( next )
                next => list_next( next )
 
                do jj = 1, max_rdiag_reals
@@ -440,7 +440,7 @@ module conmon_process_time_data
             obs_ctr = 0
             do while ( associated( next ) .eqv. .TRUE. )
                obs_ctr = obs_ctr + 1
-               ptr = transfer(list_get( next ), ptr)
+               ptr = list_get( next )
                next => list_next( next )
 
                do jj = 1, max_rdiag_reals
@@ -463,7 +463,7 @@ module conmon_process_time_data
             obs_ctr = 0
             do while ( associated( next ) .eqv. .TRUE. )
                obs_ctr = obs_ctr + 1
-               ptr = transfer(list_get( next ), ptr)
+               ptr = list_get( next )
                next => list_next( next )
 
                do jj = 1, max_rdiag_reals
