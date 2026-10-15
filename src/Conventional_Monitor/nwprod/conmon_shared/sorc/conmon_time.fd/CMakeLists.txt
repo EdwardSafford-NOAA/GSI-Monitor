@@ -16,10 +16,14 @@ list(APPEND SRCS
 add_executable(conmon_time.x ${SRCS})
 
 target_compile_definitions(conmon_time.x PRIVATE "_REAL8_")
+
+# Ensure shared modules are built first and visible for USE resolution.
+add_dependencies(conmon_time.x conmon_shared_obj)
+target_include_directories(conmon_time.x PRIVATE
+  $<TARGET_PROPERTY:conmon_shared_obj,Fortran_MODULE_DIRECTORY>
+)
+
 target_link_libraries(conmon_time.x PRIVATE conmon_shared)
-target_link_libraries(conmon_time.x PRIVATE NetCDF::NetCDF_Fortran)
-target_link_libraries(conmon_time.x PRIVATE ncdiag::ncdiag_serial)
-target_link_libraries(conmon_time.x PRIVATE w3emc::w3emc_4)
 
 # Install executable targets
 install(TARGETS conmon_time.x RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
